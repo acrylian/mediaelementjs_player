@@ -52,15 +52,15 @@ function mediaelementjs_js() {
 	/* 
 	$skin = getOption('mediaelementjs_skin');
 	if(file_exists($skin)) {
-		$skin = str_replace(SERVERPATH,WEBPATH,$skin); //replace SERVERPATH as that does not work as a CSS link
+		$skin = str_replace(SERVERPATH,FULLWEBPATH,$skin); //replace SERVERPATH as that does not work as a CSS link
 	} else {
-		$skin = WEBPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
+		$skin = FULLWEBPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
 	} 
 	*/
-	$skin = WEBPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
+	$skin = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
 	?>
 	<link href="<?php echo $skin; ?>" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="<?php echo WEBPATH .'/'.ZENFOLDER.'/'.PLUGIN_FOLDER; ?>/mediaelementjs_player/mediaelement-and-player.min.js"></script>
+	<script type="text/javascript" src="<?php echo FULLWEBPATH .'/'.USER_PLUGIN_FOLDER; ?>/mediaelementjs_player/mediaelement-and-player.min.js"></script>
 	<script>
 		$(document).ready(function(){
 			$('video,audio').mediaelementplayer();
@@ -138,8 +138,8 @@ class mediaelementjs_options {
  */
 function getMediaelementjsSkins() {
 	$all_skins = array();
-	$default_skins_dir = WEBPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/';
-	$user_skins_dir = SERVERPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/';
+	$default_skins_dir = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/';
+	$user_skins_dir = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/';
 	$filestoignore = array( '.', '..','.DS_Store','Thumbs.db','.htaccess','.svn');
 	$skins = array_diff(scandir($default_skins_dir),array_merge($filestoignore));
 	$default_skins = getMediaelementjsSkinCSS($skins,$default_skins_dir);
@@ -241,8 +241,8 @@ class medialementjs_player {
     				}
     			} 
     	  	$playerconfig  .= '		
-    				<object width="'.$this->width.'" height="'.$this->height.'" type="application/x-shockwave-flash" data="'.SERVERPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf">
-        			<param name="movie" value="'.SERVERPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf" />
+    				<object width="'.$this->width.'" height="'.$this->height.'" type="application/x-shockwave-flash" data="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf">
+        			<param name="movie" value="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf" />
         			<param name="flashvars" value="controls=true&file='.pathurlencode($moviepath).'" />
         			<p>'.gettext('Sorry, no playback capabilities.').'</p>
     				</object>
@@ -269,8 +269,8 @@ class medialementjs_player {
 				$playerconfig  .= '		
     				<!-- <track kind="subtitles" src="subtitles.srt" srclang="en" /> -->
     				<!-- <track kind="chapters" src="chapters.srt" srclang="en" /> -->
-    				<object width="'.$this->width.'" height="'.$this->height.'" type="application/x-shockwave-flash" data="'.SERVERPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf">
-        			<param name="movie" value="'.SERVERPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf" />
+    				<object width="'.$this->width.'" height="'.$this->height.'" type="application/x-shockwave-flash" data="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf">
+        			<param name="movie" value="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf" />
         			<param name="flashvars" value="controls=true&file='.pathurlencode($moviepath).'" />
         			<p>'.gettext('Sorry, no playback capabilities.').'</p>
     				</object>
