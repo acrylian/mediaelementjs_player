@@ -1,13 +1,14 @@
 <?php
 /**
- * Support for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers.
+ * A Zenphoto plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). 
+ * It will play natively via HTML5 in capable browsers (otherwise using Flash or Silverstripe fallbacks) and is responsive.
  * 
- * Audio: <var>.mp3</var>, <var>.m4a</var>, <var>.fla</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
+ * Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
  * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
  *
  * IMPORTANT NOTE ON OGG AND WEBM COUNTERPART FORMATS:
  *
- * The counterpart formats are not valid formats for Zenphoto itself as that would confuse the management.
+ * The counterpart formats are not valid formats for Zenphoto itself and not recognized as items as that would confuse the management.
  * Therefore these formats can be uploaded via FTP only.
  * The files needed to have the same file name (beware the character case!). In single player usage the player
  * will check via file system if a counterpart file exists if counterpart support is enabled.
@@ -15,21 +16,32 @@
  * Since the flash fallback covers all essential formats ths is not much of an issue for visitors though.
  *
  * Subtitle and chapter support for videos (NOTE: NOT IMPLEMENTED YET!):
- * It supports .srt files. To differ what is what they must follow this naming convention:
+ * It supports .srt files. Like like the counterpart formats these MUST be uploaded via FTP! To differ what is what they must follow this naming convention:
  * subtitles file: <nameofyourvideo>_subtitles.srt
  * chapters file: <name of your video>_chapters.srt
  * 
  * Example: yourvideo.mp4 with yourvideo_subtitles.srt and yourvideo_chapters.srt
  *
- * Note: like the counterpart formats these MUST be uploaded via FTP!
+ * CONTENT MACRO:<br>
+ * Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles for example.
  *
- * <b>NOTE:</b> This player does not support external albums! Also it does not have playlist capability.
+ * Usage:
+ * [MEDIAPLAYER <fullpath to your multimedia file> <number>]
+ *
+ * Example:
+ * [MEDIAPLAYER http://yourdomain.com/albums/video/video.mp4]
+ *
+ * If you are using more than one player on a page you need to pass a 2nd parameter with for example an unique number:<br>
+ * [MEDIAPLAYER http://yourdomain.com/albums/video/video1.mp4 1]<br>
+ * [MEDIAPLAYER http://yourdomain.com/albums/video/video2.mp4 2]
+ *
+ * <b>NOTE:</b> This player does not support external albums! Also it does not have playlist capability yet.
  *
  * @author Malte Müller (acrylian)
  * @package plugins
  * @subpackage media
  */
-
+$plugin_is_filter = 5 | THEME_PLUGIN | ADMIN_PLUGIN;
 $plugin_description = gettext("Enable <strong>mediaelement.js</strong> to handle multimedia files.");
 $plugin_notice = gettext("<strong>IMPORTANT</strong>: Only one multimedia player plugin can be enabled at the time and the class-video plugin must be enabled, too.").'<br /><br />'.gettext("Please see <a href='http://http://mediaelementjs.com'>mediaelementjs.com</a> for more info about the player and its license.");
 $plugin_author = "Malte Müller (acrylian)";
@@ -45,6 +57,7 @@ if (isset($_zp_flash_player) || $plugin_disable) {
 } else {
 	$_zp_flash_player = new medialementjs_player(); // claim to be the flash player.
 	zp_register_filter('theme_head','mediaelementjs_js');
+	zp_register_filter('content_macro', 'medialementjs_player::macro');
 }
 
 
@@ -80,9 +93,9 @@ class mediaelementjs_options {
 		setOptionDefault('mediaelementjs_tracks', 0);
 		setOptionDefault('mediaelementjs_volume', 1);
 		setOptionDefault('mediaelementjs_fullscreen', 1);
-		setOptionDefault('mediaelementjs_videowidth', 470);
+		setOptionDefault('mediaelementjs_videowidth', '100%');
 		setOptionDefault('mediaelementjs_videoheight', 270);
-		setOptionDefault('mediaelementjs_audiowidth', 400);
+		setOptionDefault('mediaelementjs_audiowidth', '100%');
 		setOptionDefault('mediaelementjs_audioheight', 30);
 		setOptionDefault('mediaelementjs_preload', 0);
 		setOptionDefault('mediaelementjs_poster', 1);
@@ -116,11 +129,11 @@ class mediaelementjs_options {
 			gettext('Audio width') => array(
 				'key' => 'mediaelementjs_audiowidth', 'type' => OPTION_TYPE_TEXTBOX,
 				'order'=>5,
-				'desc' => gettext('Pixel value or percent for responsive layouts')),
+				'desc' => gettext('Pixel value or set 100% for responsive layouts (default).')),
 			gettext('Audio height') => array(
 				'key' => 'mediaelementjs_audioheight', 'type' => OPTION_TYPE_TEXTBOX,
 				'order'=>5,
-				'desc' => gettext('Pixel value or percent for responsive layouts')),
+				'desc' => gettext('Pixel value or 100% for responsive layouts (default).')),
 			gettext('Preload') => array(
 				'key' => 'mediaelementjs_preload', 'type' => OPTION_TYPE_CHECKBOX,
 				'order'=>5,
@@ -167,7 +180,6 @@ function getMediaelementjsSkinCSS($skins,$dir) {
 	return $skin_css;
 }
 
-
 class medialementjs_player {
 	public $width = '';
 	public $height = '';
@@ -190,14 +202,13 @@ class medialementjs_player {
 	function getPlayerConfig($moviepath, $imagefilename, $count='', $width='', $height='') {
 		global $_zp_current_album, $_zp_current_image;
 		$ext = getSuffix($moviepath);
-		if(!in_array($ext,array('m4a','m4v','mp3','mp4','flv', 'fla'))) {
+		if(!in_array($ext,array('m4a','m4v','mp3','mp4','flv'))) {
 			echo '<p>'.gettext('This multimedia format is not supported by mediaelement.js.').'</p>';
 			return NULL;
 		}
 		switch($ext) {
 			case 'm4a':
 			case 'mp3':
-			case 'fla':
 				$this->mode = 'audio';
 			  break;
 			case 'mp4':
@@ -206,15 +217,20 @@ class medialementjs_player {
 				$this->mode = 'video';
 			  break;
 		}
-		if(!empty($width)) {
+		if(empty($width)) {
 			$this->width = $this->getVideoWidth();
 		} else {
 			$this->width = $width;
 		}
-		if(!empty($height)) {
+		if(empty($height)) {
 			$this->height = $this->getVideoHeight();
 		} else {
 			$this->height = $height;
+		}
+		if($this->width = '100%') {
+			$style= ' style="max-width: 100%"';	
+		} else {
+			$style = '';
 		}
 		if(empty($count)) {
 			$multiplayer = false;
@@ -233,7 +249,7 @@ class medialementjs_player {
 		switch($this->mode) {
 			case 'audio':
 				$playerconfig  = '
-					<audio id="mediaelementjsplayer'.$count.'" width="'.$this->width.'" height="'.$this->height.'" controls="controls"'.$preload.'>
+					<audio id="mediaelementjsplayer'.$count.'" width="'.$this->width.'" height="'.$this->height.'" controls="controls"'.$preload.$style.'>
     				<source type="audio/mp3" src="'.pathurlencode($moviepath).'" />';
     			if(count($counterparts) != 0) {
     				foreach($counterparts as $counterpart) {
@@ -259,7 +275,7 @@ class medialementjs_player {
 					}
 				} 
 				$playerconfig  = '
-					<video id="mediaelementjsplayer'.$count.'" width="'.$this->width.'" height="'.$this->height.'" controls="controls"'.$preload.$poster.'>
+					<video id="mediaelementjsplayer'.$count.'" width="'.$this->width.'" height="'.$this->height.'" controls="controls"'.$preload.$style.$poster.'>
     				<source type="video/mp4" src="'.pathurlencode($moviepath).'" />';
     		if(count($counterparts) != 0) {
     				foreach($counterparts as $counterpart) {
@@ -386,6 +402,24 @@ class medialementjs_player {
 				}
 				break;
 		}
+	}
+	
+	static function getMacroplayer($moviepath, $count = 1) {
+		global $_zp_flash_player;
+		$moviepath = trim($moviepath, '\'"');
+		$player = $_zp_flash_player->getPlayerConfig($moviepath, '', (int) $count);
+		return $player;
+	}
+
+	static function macro($macros) {
+		$macros['MEDIAPLAYER'] = array(
+						'class'	 => 'function',
+						'params' => array('string', 'int*'),
+						'value'	 => 'medialementjs_player::getMacroplayer',
+						'owner'	 => 'medialementjs_player',
+						'desc'	 => gettext('Provide the path to media file as %1 and a unique number as %2. (If there is only player instance on the page the parameter may be omitted.)')
+		);
+		return $macros;
 	}
 	
 } // mediaelementjs class
