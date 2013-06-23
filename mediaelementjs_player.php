@@ -1,7 +1,6 @@
 <?php
 /**
- * A Zenphoto plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). 
- * It will play natively via HTML5 in capable browsers (otherwise using Flash or Silverstripe fallbacks) and is responsive.
+ * Support for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
  * 
  * Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
  * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
@@ -41,7 +40,7 @@
  * @package plugins
  * @subpackage media
  */
-$plugin_is_filter = 5 | THEME_PLUGIN | ADMIN_PLUGIN;
+$plugin_is_filter = 5 | CLASS_PLUGIN;
 $plugin_description = gettext("Enable <strong>mediaelement.js</strong> to handle multimedia files.");
 $plugin_notice = gettext("<strong>IMPORTANT</strong>: Only one multimedia player plugin can be enabled at the time and the class-video plugin must be enabled, too.").'<br /><br />'.gettext("Please see <a href='http://http://mediaelementjs.com'>mediaelementjs.com</a> for more info about the player and its license.");
 $plugin_author = "Malte Müller (acrylian)";
@@ -55,6 +54,11 @@ if (isset($_zp_flash_player) || $plugin_disable) {
 		trigger_error(sprintf(gettext('mediaelement.js not enabled, %s is already instantiated.'),get_class($_zp_flash_player)),E_USER_NOTICE);
 	}
 } else {
+	addPluginType('flv', 'Video');
+	addPluginType('mp3', 'Video');
+	addPluginType('mp4', 'Video');
+	addPluginType('m4v', 'Video');
+	addPluginType('m4a', 'Video');
 	$_zp_flash_player = new medialementjs_player(); // claim to be the flash player.
 	zp_register_filter('theme_head','mediaelementjs_js');
 	zp_register_filter('content_macro', 'medialementjs_player::macro');
