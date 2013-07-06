@@ -417,9 +417,9 @@ class medialementjs_player {
 
 	static function macro($macros) {
 		$macros['MEDIAPLAYER'] = array(
-						'class'	 => 'function',
+						'class'	 => 'expression',
 						'params' => array('string', 'int*'),
-						'value'	 => 'medialementjs_player::getMacroplayer',
+						'value'	 => 'medialementjs_player::getMacroplayer($1,$2);',
 						'owner'	 => 'medialementjs_player',
 						'desc'	 => gettext('Provide the path to media file as %1 and a unique number as %2. (If there is only player instance on the page the parameter may be omitted.)')
 		);
