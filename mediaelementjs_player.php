@@ -34,7 +34,7 @@
  * [MEDIAPLAYER http://yourdomain.com/albums/video/video1.mp4 1]<br>
  * [MEDIAPLAYER http://yourdomain.com/albums/video/video2.mp4 2]
  *
- * <b>NOTE:</b> This player does not support external albums! Also it does not have playlist capability yet.
+ * <b>NOTE:</b> This player does not support external albums! Also it does not have any playlist capability yet.
  *
  * @author Malte Müller (acrylian)
  * @package plugins
