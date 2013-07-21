@@ -53,7 +53,7 @@ $plugin_description = gettext("Enable <strong>mediaelement.js</strong> to handle
 $plugin_notice = gettext("<strong>IMPORTANT</strong>: Only one multimedia player plugin can be enabled at the time and the class-video plugin must be enabled, too.").'<br /><br />'.gettext("Please see <a href='http://http://mediaelementjs.com'>mediaelementjs.com</a> for more info about the player and its license.");
 $plugin_author = "Malte Müller (acrylian)";
 $plugin_disable = (getOption('album_folder_class') === 'external')?gettext('This player does not support <em>External Albums</em>.'):false;
-$plugin_version = '1.0';
+$plugin_version = '1.1';
 $option_interface = 'mediaelementjs_options';
 
 if (!empty($_zp_multimedia_extension->name) || $plugin_disable) {
@@ -302,7 +302,12 @@ class mediaelementjs_player {
 				$poster = '';
 				if(getOption('mediaelementjs_poster')) {
 					if(is_null($_zp_current_image)) {
-						$poster = '';
+						$imagename = substr(strrchr($moviepath,ALBUM_FOLDER_WEBPATH),1);
+						$albumname = str_replace(FULLWEBPATH.ALBUM_FOLDER_EMPTY,'',$moviepath);
+						$albumname = str_replace('/'.$imagename,'',$albumname); 
+						$albobj = newAlbum($albumname);
+						$imgobj = newImage($albobj,$imagename);
+						$poster = ' poster="' . $imgobj->getCustomImage(null, $this->width, $this->height, $this->width, $this->height, null, null, true) . '"';
 					} else {
 						$poster = ' poster="'.$_zp_current_image->getCustomImage(null, $this->width, $this->height, $this->width, $this->height, null, null, true).'"';
 					}
