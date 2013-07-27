@@ -25,24 +25,25 @@
  * Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles for example.
  *
  * Usage:
- * [MEDIAPLAYER <fullpath to your multimedia file> <number>]
+ * [MEDIAPLAYER <albumname> <imagefilename> <number>]
  *
  * Example:
- * [MEDIAPLAYER http://yourdomain.com/albums/video/video.mp4]
+ * [MEDIAPLAYER album1 video.mp4]
  *
  * If you are using more than one player on a page you need to pass a 2nd parameter with for example an unique number:<br>
- * [MEDIAPLAYER http://yourdomain.com/albums/video/video1.mp4 1]<br>
- * [MEDIAPLAYER http://yourdomain.com/albums/video/video2.mp4 2]
+ * [MEDIAPLAYER album1 video1.mp4 1]<br>
+ * [MEDIAPLAYER album2 video2.mp4 2]
  *
  * <b>NOTE:</b> This player does not support external albums! 
  *
+ * Playlist (beta):
  * Basic playlist support (adapted from Andrew Berezovsky – https://github.com/duozersk/mep-feature-playlist):
  * Enable the option to load the playlist script support. Then call on your theme's album.php the method $_zp_multimedia_extension->playlistPlayer();
  * echo $_zp_multimedia_extension->playlistPlayer('video','',''); //video playlist using all available .mp4,.m4v, .flv files only
  * echo $_zp_multimedia_extension->playlistPlayer('audio','',''); //audio playlist using all available .mp3,.m4a files only
  * Additionally you can set a specific albumname on the 2nd parameter to call a playlist outside of album.php 
  *
- * Notes: Mixed audio and video playlists are not possible. Counterpart formats are not supported. Also the next playlist item does not automatically play.
+ * Notes: Mixed audio and video playlists are not possible. Counterpart formats are also not supported. Also the next playlist item does not automatically play.
  *
  * @author Malte Müller (acrylian)
  * @package plugins
@@ -57,9 +58,13 @@ $plugin_version = '1.1';
 $option_interface = 'mediaelementjs_options';
 
 if (!empty($_zp_multimedia_extension->name) || $plugin_disable) {
-	setOption('zp_plugin_mediaelementjs_player',0);
+	enableExtension(')mediaelementjs_player', 0);
+
+//NOTE: the following text really should be included in the $plugin_disable statement above so that it is visible
+//on the plugin tab
+
 	if (isset($_zp_multimedia_extension)) {
-		trigger_error(sprintf(gettext('mediaelement.js not enabled, %s is already instantiated.'),get_class($_zp_flash_player)),E_USER_NOTICE);
+		trigger_error(sprintf(gettext('Mediaelementjs_player not enabled, %s is already instantiated.'), get_class($_zp_multimedia_extension)), E_USER_NOTICE);
 	}
 } else {
 	addPluginType('flv', 'Video');
@@ -223,17 +228,17 @@ class mediaelementjs_player {
 	}
 
 	/**
-	 * Get the JS configuration of jplayer
+	 * Get the JS configuration of Mediaelementjs_player
 	 *
-	 * @param string $moviepath the direct path of a movie
-	 * @param string $imagefilename the filename of the movie
+	 * @param mixed $movie the image object
+	 * @param string $movietitle the title of the movie
 	 * @param string $count number (preferredly the id) of the item to append to the css for multiple players on one page
-	 * @param string $width Not supported as jPlayer is dependend on its CSS based skin to change sizes. Can only be set via plugin options.
-	 * @param string $height Not supported as jPlayer is dependend on its CSS based skin to change sizes. Can only be set via plugin options.
+	 * @param string $width Width of the video. If not set the option value is used.
+	 * @param string $height Height of the video. If not set the option value is used.
 	 *
 	 */
-	function getPlayerConfig($moviepath, $imagefilename, $count='', $width='', $height='') {
-		global $_zp_current_album, $_zp_current_image;
+	function getPlayerConfig($movie, $movietitle='', $count='', $width='', $height='') {
+		$moviepath = $movie->getFullImage(FULLWEBPATH);
 		$ext = getSuffix($moviepath);
 		if(!in_array($ext,array('m4a','m4v','mp3','mp4','flv'))) {
 			echo '<p>'.gettext('This multimedia format is not supported by mediaelement.js.').'</p>';
@@ -260,7 +265,7 @@ class mediaelementjs_player {
 		} else {
 			$this->height = $height;
 		}
-		if($this->width = '100%') {
+		if($this->width == '100%') {
 			$style= ' style="max-width: 100%"';	
 		} else {
 			$style = '';
@@ -272,7 +277,6 @@ class mediaelementjs_player {
 			$multiplayer = true; // since we need extra JS if multiple players on one page
 			$count = $count;
 		}
-		$playerconfig  = '';
 		if(getOption('mediaelementjs_preload')) {
 			$preload = ' preload="preload"';
 		} else {
@@ -281,7 +285,7 @@ class mediaelementjs_player {
 		$counterparts = $this->getCounterpartFiles($moviepath,$ext);
 		switch($this->mode) {
 			case 'audio':
-				$playerconfig  = '
+				$playerconfig  .= '
 					<audio id="mediaelementjsplayer'.$count.'" class="mep_player" width="'.$this->width.'" height="'.$this->height.'" controls="controls"'.$preload.$style.'>
     				<source type="audio/mp3" src="'.pathurlencode($moviepath).'" />';
     			if(count($counterparts) != 0) {
@@ -301,18 +305,9 @@ class mediaelementjs_player {
 			case 'video':
 				$poster = '';
 				if(getOption('mediaelementjs_poster')) {
-					if(is_null($_zp_current_image)) {
-						$imagename = substr(strrchr($moviepath,ALBUM_FOLDER_WEBPATH),1);
-						$albumname = str_replace(FULLWEBPATH.ALBUM_FOLDER_EMPTY,'',$moviepath);
-						$albumname = str_replace('/'.$imagename,'',$albumname); 
-						$albobj = newAlbum($albumname);
-						$imgobj = newImage($albobj,$imagename);
-						$poster = ' poster="' . $imgobj->getCustomImage(null, $this->width, $this->height, $this->width, $this->height, null, null, true) . '"';
-					} else {
-						$poster = ' poster="'.$_zp_current_image->getCustomImage(null, $this->width, $this->height, $this->width, $this->height, null, null, true).'"';
-					}
+					$poster = ' poster="' . $movie->getCustomImage(null, $this->width, $this->height, $this->width, $this->height, null, null, true) . '"';
 				} 
-				$playerconfig  = '
+				$playerconfig  .= '
 					<video id="mediaelementjsplayer'.$count.'" class="mep_player" width="'.$this->width.'" height="'.$this->height.'" controls="controls"'.$preload.$style.$poster.'>
     				<source type="video/mp4" src="'.pathurlencode($moviepath).'" />';
     		if(count($counterparts) != 0) {
@@ -338,12 +333,16 @@ class mediaelementjs_player {
 	/**
 	 * outputs the player configuration HTML
 	 *
-	 * @param string $moviepath the direct path of a movie (within the slideshow), if empty (within albums) the current image is used
-	 * @param string $imagefilename the filename of the movie. if empty (within albums) the function getImageTitle() is used
+ 	 * @param mixed $movie the image object if empty (within albums) the current image is used
+	 * @param string $movietitle the title of the movie. if empty the Image Title is used
 	 * @param string $count unique text for when there are multiple player items on a page
 	 */
-	function printPlayerConfig($moviepath='',$imagefilename='',$count ='') {
-		echo $this->getPlayerConfig($moviepath,$imagefilename,$count);
+	function printPlayerConfig($movie = NULL, $movietitle = NULL,$count ='') {
+		global $_zp_current_image;
+		if (empty($movie)) {
+			$movie = $_zp_current_image;
+		}
+		echo $this->getPlayerConfig($movie,$movietitle,$count);
 	}
 
 
@@ -365,7 +364,7 @@ class mediaelementjs_player {
 				break;
 		}
 		foreach($suffixes as $suffix) {
-			$counterpart = str_replace($ext,$suffix,$moviepath,$count);
+			$counterpart = str_replace($ext, $filesuffix, $moviepath);
 			if(file_exists(str_replace(FULLWEBPATH,SERVERPATH,$counterpart))) {
 				switch($suffix) {
 					case 'oga':
@@ -441,26 +440,28 @@ class mediaelementjs_player {
 				break;
 		}
 	}
-	
-	
-	
-	static function getMacroplayer($moviepath, $count = 1) {
+
+	static function getMacroPlayer($albumname, $imagename, $count = 1) {
 		global $_zp_multimedia_extension;
-		$moviepath = trim($moviepath, '\'"');
-		$player = $_zp_multimedia_extension->getPlayerConfig($moviepath, '', (int) $count);
-		return $player;
+		$movie = newImage(NULL, array('folder' => $albumname, 'filename' => $imagename), true);
+		if ($movie->exists) {
+			return $_zp_multimedia_extension->getPlayerConfig($movie, NULL, (int) $count);
+		} else {
+			return '<span class = "error">' . sprintf(gettext('%1$s::%2$s not found.'), $albumname, $imagename) . '</span>';
+		}
 	}
 
 	static function macro($macros) {
 		$macros['MEDIAPLAYER'] = array(
 						'class'	 => 'function',
-						'params' => array('string', 'int*'),
-						'value'	 => 'medialementjs_player::getMacroplayer',
-						'owner'	 => 'medialementjs_player',
-						'desc'	 => gettext('Provide the path to media file as %1 and a unique number as %2. (If there is only player instance on the page the parameter may be omitted.)')
+						'params' => array('string','string','int*'),
+						'value'	 => 'medialelementjs_player::getMacroPlayer',
+						'owner'	 => 'medialelementjs_player',
+						'desc'	 => gettext('provide the album name (%1), media file name (%2) and a unique number (%3). (If there is only player instance on the page the parameter may be omitted.)')
 		);
 		return $macros;
 	}
+	
 	/**
 	 * Returns the width of the player
 	 * @param object $image the image for which the height is requested (not used!)
@@ -499,7 +500,7 @@ class mediaelementjs_player {
 			case 'audio':
 				$width = getOption('mediaelementjs_audiowidth');
 				$height = 'auto';
-				if($width = '100%') {
+				if($width == '100%') {
 					$style= ' style="max-width: 100%;clear: both;"';	
 				} else {
 					$style = '';
@@ -533,7 +534,7 @@ class mediaelementjs_player {
 			case 'video':
 				$width = getOption('mediaelementjs_videowidth');
 				$height = getOption('mediaelementjs_videoheight');
-				if($width = '100%') {
+				if($width == '100%') {
 					$style= ' style="max-width: 100%;display:block;"';	
 				} else {
 					$style = '';
