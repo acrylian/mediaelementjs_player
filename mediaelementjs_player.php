@@ -455,8 +455,8 @@ class mediaelementjs_player {
 		$macros['MEDIAPLAYER'] = array(
 						'class'	 => 'function',
 						'params' => array('string','string','int*'),
-						'value'	 => 'medialelementjs_player::getMacroPlayer',
-						'owner'	 => 'medialelementjs_player',
+						'value'	 => 'mediaelementjs_player::getMacroPlayer',
+						'owner'	 => 'mediaelementjs_player',
 						'desc'	 => gettext('provide the album name (%1), media file name (%2) and a unique number (%3). (If there is only player instance on the page the parameter may be omitted.)')
 		);
 		return $macros;
