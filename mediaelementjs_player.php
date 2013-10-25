@@ -201,7 +201,7 @@ class mediaelementjs_player {
 		
 	}
 	
-	function getFeatureOptions() {
+	static function getFeatureOptions() {
 		$array = array();
 		if(getOption('mediaelementjs_playpause')) $array[] = 'playpause';
 		if(getOption('mediaelementjs_progress')) $array[] = 'progress';
@@ -233,7 +233,7 @@ class mediaelementjs_player {
 		} 
 		*/
 		$skin = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
-		$features = getFeatureOptions();
+		$features = mediaelementjs_player::getFeatureOptions();
 		if(getOption('mediaelementjs_showcontrols')) { 
 			$showcontrols = 'true';
 		} else {
@@ -254,7 +254,7 @@ class mediaelementjs_player {
 	}
 	
 	static function mediaelementjs_playlist_js() {
-		$features = getFeatureOptions();
+		$features = mediaelementjs_player::getFeatureOptions();
 		$playlistfeatures = "'playlistfeature', 'prevtrack','loop', 'shuffle', 'playlist'";
 		if(!empty($features)) {
 			$playlistfeatures .= $playlistfeatures.','.$features;
