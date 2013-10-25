@@ -110,7 +110,8 @@ class mediaelementjs_options {
 					gettext('Duration')=>'mediaelementjs_duration',
 					gettext('Tracks (Video only)')=>'medialementjs_tracks',
 					gettext('Volume')=>'mediaelementjs_volume',
-					gettext('Fullscreen')=>'mediaelementjs_fullscreen'
+					gettext('Fullscreen')=>'mediaelementjs_fullscreen',
+					gettext('Always show controls')=>'mediaelementjs_showcontrols'
 				),
 				'desc' => gettext('Enable what should be shown in the player control bar.')),
 			gettext('Video width') => array(
@@ -132,7 +133,7 @@ class mediaelementjs_options {
 			gettext('Preload') => array(
 				'key' => 'mediaelementjs_preload', 'type' => OPTION_TYPE_CHECKBOX,
 				'order'=>5,
-				'desc' => gettext('If the files should be preloaded.')),
+				'desc' => gettext('If the files should be preloaded (Note if this works is browser dependent and might not work in all!).')),
 			gettext('Video Poster') => array(
 				'key' => 'mediaelementjs_poster', 'type' => OPTION_TYPE_CHECKBOX,
 				'order'=>5,
@@ -200,6 +201,28 @@ class mediaelementjs_player {
 		
 	}
 	
+	function getFeatureOptions() {
+		$array = array();
+		if(getOption('mediaelementjs_playpause')) $array[] = 'playpause';
+		if(getOption('mediaelementjs_progress')) $array[] = 'progress';
+		if(getOption('mediaelementjs_current')) $array[] = 'current';
+		if(getOption('mediaelementjs_duration')) $array[] = 'duration';
+		if(getOption('medialementjs_tracks')) $array[] = 'tracks';
+		if(getOption('mediaelementjs_volume')) $array[] = 'volume';
+		if(getOption('mediaelementjs_fullscreen')) $array[] = 'fullscreen';
+		$count = '';
+		$featurecount = count($array);
+		$features = '';
+		foreach($array as $f) {
+			$count++;
+			$features .= "'".$f."'";
+			if($count != $featurecount) {
+				$features .= ',';
+			}
+		}
+		return $features;
+	}
+	
 	static function mediaelementjs_js() {
 		/* 
 		$skin = getOption('mediaelementjs_skin');
@@ -210,29 +233,49 @@ class mediaelementjs_player {
 		} 
 		*/
 		$skin = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
+		$features = getFeatureOptions();
+		if(getOption('mediaelementjs_showcontrols')) { 
+			$showcontrols = 'true';
+		} else {
+			$showcontrols = 'false';
+		}
 		?>
 		<link href="<?php echo $skin; ?>" rel="stylesheet" type="text/css" />
 		<script type="text/javascript" src="<?php echo FULLWEBPATH .'/'.USER_PLUGIN_FOLDER; ?>/mediaelementjs_player/mediaelement-and-player.min.js"></script>
 		<script>
 			$(document).ready(function(){
-				$('audio.mep_player,video.mep_player').mediaelementplayer();
+				$('audio.mep_player,video.mep_player').mediaelementplayer({
+					alwaysShowControls: <?php echo $showcontrols; ?>,
+					features: [<?php echo $features; ?>]
+				});
 			});
 		</script>
 		<?php
 	}
-
+	
 	static function mediaelementjs_playlist_js() {
+		$features = getFeatureOptions();
+		$playlistfeatures = "'playlistfeature', 'prevtrack','loop', 'shuffle', 'playlist'";
+		if(!empty($features)) {
+			$playlistfeatures .= $playlistfeatures.','.$features;
+		}
+		if(getOption('mediaelementjs_showcontrols')) { 
+				$showcontrols = 'true';
+			} else {
+				$showcontrols = 'false';
+			}
 		?>
 		<link href="<?php echo FULLWEBPATH.'/'.USER_PLUGIN_FOLDER; ?>/mediaelementjs_player/mep-feature-playlist.css" rel="stylesheet" type="text/css" />
 		<script type="text/javascript" src="<?php echo FULLWEBPATH .'/'.USER_PLUGIN_FOLDER; ?>/mediaelementjs_player/mep-feature-playlist.js"></script>
 		<script>
 		$(document).ready(function(){
 			$('audio.mep_playlist,video.mep_playlist').mediaelementplayer({
+				alwaysShowControls: <?php echo $showcontrols; ?>,
 				loop: false, 
 				shuffle: false,
 				playlist: true,
 				playlistposition: 'top',
-				features: ['playlistfeature', 'prevtrack', 'playpause', 'nexttrack', 'loop', 'shuffle', 'playlist', 'current', 'progress', 'duration', 'volume'],
+				features: [<?php echo $playlistfeatures; ?>],
 			});
 		});
 			</script>
