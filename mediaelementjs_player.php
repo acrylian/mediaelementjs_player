@@ -89,12 +89,14 @@ class mediaelementjs_options {
 		setOptionDefault('mediaelementjs_videoheight', 270);
 		setOptionDefault('mediaelementjs_audiowidth', '100%');
 		setOptionDefault('mediaelementjs_audioheight', 30);
-		setOptionDefault('mediaelementjs_audioposterwidth', 640);
-		setOptionDefault('mediaelementjs_audioposterheight', 360);
 		setOptionDefault('mediaelementjs_preload', 0);
 		setOptionDefault('mediaelementjs_poster', 1);
+		setOptionDefault('mediaelementjs_videoposterwidth', 640);
+		setOptionDefault('mediaelementjs_videoposterheight', 360);
     setOptionDefault('mediaelementjs_audioposter', 1);
-     setOptionDefault('mediaelementjs_audiopostercrop', 0);
+    setOptionDefault('mediaelementjs_audiopostercrop', 0);
+    setOptionDefault('mediaelementjs_audioposterwidth', 640);
+		setOptionDefault('mediaelementjs_audioposterheight', 360);
 		setOptionDefault('mediaelementjs_playlist', 0);
 	}
 
@@ -140,6 +142,14 @@ class mediaelementjs_options {
 				'key' => 'mediaelementjs_poster', 'type' => OPTION_TYPE_CHECKBOX,
 				'order'=>5,
 				'desc' => gettext('If a poster of the videothumb should be shown. This is cropped to fit the player size as the player would distort image not fitting the player dimensions otherwise.')),
+			gettext('Video poster width') => array(
+				'key' => 'mediaelementjs_videoposterwidth', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>8,
+				'desc' => gettext('Max width of the video poster (px). Image will be sized automatially in responsive layouts. Might require theme CSS changes to work correctly.')),
+			gettext('Video poster height') => array(
+				'key' => 'mediaelementjs_videoposterheight', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>9,
+				'desc' => gettext('Height of the video poster (px). Image will be sized automatially in responsive layouts. Might require theme CSS changes to work correctly.')),
       gettext('Audio poster') => array(
 				'key' => 'mediaelementjs_poster', 'type' => OPTION_TYPE_CHECKBOX,
 				'order'=>5,
@@ -147,7 +157,7 @@ class mediaelementjs_options {
       gettext('Audio poster width') => array(
 				'key' => 'mediaelementjs_audioposterwidth', 'type' => OPTION_TYPE_TEXTBOX,
 				'order'=>8,
-				'desc' => gettext('Width of the audio poster (px). Image will be sized automatially in responsive layouts. Might require theme CSS changes to work correctly.')),
+				'desc' => gettext('Max width of the audio poster (px). Image will be sized automatially in responsive layouts. Might require theme CSS changes to work correctly.')),
 			gettext('Audio poster height') => array(
 				'key' => 'mediaelementjs_audioposterheight', 'type' => OPTION_TYPE_TEXTBOX,
 				'order'=>9,
@@ -378,11 +388,15 @@ class mediaelementjs_player {
 			case 'video':
 				$poster = '';
 				if(getOption('mediaelementjs_poster')) {
-					if($width == '100%') {
-						$poster = ' poster="' . $movie->getCustomImage(null, null, null, null, null, null, null, true) . '"';
-					} else {
-						$poster = ' poster="' . $movie->getCustomImage(null, $width, $height, $width, $height, null, null, true) . '"';
-					}
+					$posterwidth = getOption('mediaelementjs_videoposterwidth');
+          $posterheight = getOption('mediaelementjs_videoposterheight');
+          if(empty($posterwidth)) {
+          	$posterwidth = 640;
+          }
+          if(empty($posterheight)) {
+          	$posterheight = 360;
+          }
+					$poster = ' poster="' . $movie->getCustomImage(null, $posterwidth, $posterheight, $posterwidth, $posterheight, null, null, true) . '"';
 				} 
 				$playerconfig  .= '
 					<video id="mediaelementjsplayer' . $count . '" class="mep_player" width="' . $width . '" height="' . $height . '" controls="controls"' . $preload . $poster . $style . '>
