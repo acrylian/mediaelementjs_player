@@ -2,8 +2,8 @@
 /**
  * Support for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
  * 
- * Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
- * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
+ * Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webm</var> supported (see note below!)<br>
+ * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webm</var> supported (see note below!)
  *
  * IMPORTANT NOTE ON OGG AND WEBM COUNTERPART FORMATS:
  *
@@ -371,10 +371,8 @@ class mediaelementjs_player {
 				$playerconfig .= '
 					<audio id="mediaelementjsplayer'.$count.'" class="mep_player" width="'.$width.'" height="'.$height.'" controls="controls"'.$preload.$style.'>
     				<source type="audio/mp3" src="'.pathurlencode($moviepath).'" />';
-    			if(count($counterparts) != 0) {
-    				foreach($counterparts as $counterpart) {
-    					$playerconfig .= $counterpart;
-    				}
+    			if(!empty($counterparts)) {
+    				$playerconfig .= $counterparts;
     			} 
     	  	$playerconfig  .= '		
     				<object width="'.$width.'" height="'.$height.'" type="application/x-shockwave-flash" data="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf">
@@ -400,12 +398,10 @@ class mediaelementjs_player {
 				} 
 				$playerconfig  .= '
 					<video id="mediaelementjsplayer' . $count . '" class="mep_player" width="' . $width . '" height="' . $height . '" controls="controls"' . $preload . $poster . $style . '>
-    				<source type="video/mp4" src="'.pathurlencode($moviepath).'" />';
-    		if(count($counterparts) != 0) {
-    				foreach($counterparts as $counterpart) {
-    					$playerconfig .= $counterpart;
-    				}
-    			}		
+    				<source type="video/mp4" src="'.pathurlencode($moviepath).'" />'."\n";
+    		if(!empty($counterparts)) {
+    			$playerconfig .= $counterparts;
+    		}		
 				$playerconfig  .= '		
     				<!-- <track kind="subtitles" src="subtitles.srt" srclang="en" /> -->
     				<!-- <track kind="chapters" src="chapters.srt" srclang="en" /> -->
@@ -444,13 +440,13 @@ class mediaelementjs_player {
 	 * @param string $ext the file format extention to search the counterpart for (as we already have fetched that)
 	 */
 	function getCounterpartFiles($moviepath,$ext) {
-		$counterparts = array();
+		$counterparts = '';
 		switch($this->mode) {
 			case 'audio':
-				$suffixes = array('oga','webma');
+				$suffixes = array('oga','webm');
 				break;
 			case 'video':
-				$suffixes = array('ogv','webmv');
+				$suffixes = array('ogv','webm');
 				break;
 		}
     //$filesuffix ='';
@@ -461,18 +457,15 @@ class mediaelementjs_player {
 					case 'oga':
 						$type = 'audio/ogg';
 						break;
-					case 'webma':
-						$type = 'audio/webm';
-						break;
 					case 'ogv':
 						$type = 'video/ogg';
 						break;
-					case 'webmv':
+					case 'webm':
 						$type = 'video/webm';
 						break;
 				}
-				$source = '<source type="'.$type.'" src="'.pathurlencode($counterpart).'" />';
-				array_push($counterparts,$source);
+				$counterparts .= '<source type="'.$type.'" src="'.pathurlencode($counterpart).'" />'."\n";
+				//array_push($counterparts,$source);
 			}
 		}
 		return $counterparts;
