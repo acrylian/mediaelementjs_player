@@ -443,10 +443,10 @@ class mediaelementjs_player {
 		$counterparts = '';
 		switch($this->mode) {
 			case 'audio':
-				$suffixes = array('oga','webm');
+				$suffixes = array('oga','webma');
 				break;
 			case 'video':
-				$suffixes = array('ogv','webm');
+				$suffixes = array('ogv','webmv');
 				break;
 		}
     //$filesuffix ='';
@@ -460,7 +460,10 @@ class mediaelementjs_player {
 					case 'ogv':
 						$type = 'video/ogg';
 						break;
-					case 'webm':
+					case 'webma':
+						$type = 'audio/webm';
+						break;
+					case 'webmv':
 						$type = 'video/webm';
 						break;
 				}
