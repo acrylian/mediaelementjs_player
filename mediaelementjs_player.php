@@ -2,17 +2,20 @@
 /**
  * Support for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
  * 
- * Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webm</var> supported (see note below!)<br>
- * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webm</var> supported (see note below!)
+ * Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
+ * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
  *
  * IMPORTANT NOTE ON OGG AND WEBM COUNTERPART FORMATS:
- *
  * The counterpart formats are not valid formats for Zenphoto itself and not recognized as items as that would confuse the management.
  * Therefore these formats can be uploaded via FTP only.
  * The files need to have the same file name (beware the character case!). In single player usage, the player
  * will check via the file system if a counterpart file exists and if counterpart support is enabled.
+ * Firefox seems to prefer the <var>.oga</var> and <var>.ogv</var> while Chrome <var>.webma</var> and <var>.webmv</var>
  *
  * Since the flash fallback covers all essential formats this is not much of an issue for visitors though.
+ * 
+ * If you have problems with any format being recognized, you might need to tell your server about the mime types first:
+ * See examples on {@link http://mediaelementjs.com} under "installation".
  *
  * Subtitle and chapter support for videos (NOTE: NOT IMPLEMENTED YET!):
  * It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:
