@@ -1,7 +1,7 @@
 mediaelementjs_player
 =====================
 
-A Zenphoto plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
+A [Zenphoto](http://www.zenphoto.org) plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
 
 Supported file formats
 ----------------------
