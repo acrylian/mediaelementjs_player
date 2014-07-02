@@ -80,7 +80,7 @@ if (!empty($_zp_multimedia_extension->name) || $plugin_disable) {
 
 class mediaelementjs_options {
 
-	function mediaelementjs_options() {
+	function __construct() {
 		setOptionDefault('mediaelementjs_playpause', 1);
 		setOptionDefault('mediaelementjs_progress', 1);
 		setOptionDefault('mediaelementjs_current', 1);
