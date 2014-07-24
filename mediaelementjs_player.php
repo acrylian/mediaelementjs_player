@@ -50,6 +50,7 @@
  * Notes: Mixed audio and video playlists are not possible. Counterpart formats are also not supported. Also the next playlist item does not automatically play.
  *
  * @author Malte Müller (acrylian) <info@maltem.de>
+ * @copyright 2014 Malte Müller
  * @license GPL v3 or later
  * @package plugins
  * @subpackage media
