@@ -1,6 +1,7 @@
 <?php
 /**
- * Support for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
+ * Support for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com - license: MIT). 
+ * It will play natively via HTML5 in capable browsers and is responsive.
  * 
  * Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
  * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
@@ -48,7 +49,8 @@
  *
  * Notes: Mixed audio and video playlists are not possible. Counterpart formats are also not supported. Also the next playlist item does not automatically play.
  *
- * @author Malte Müller (acrylian)
+ * @author Malte Müller (acrylian) <info@maltem.de>
+ * @license GPL v3 or later
  * @package plugins
  * @subpackage media
  */
@@ -57,7 +59,7 @@ $plugin_description = gettext("Enable <strong>mediaelement.js</strong> to handle
 $plugin_notice = gettext("<strong>IMPORTANT</strong>: Only one multimedia player plugin can be enabled at the time and the class-video plugin must be enabled, too.").'<br /><br />'.gettext("Please see <a href='http://http://mediaelementjs.com'>mediaelementjs.com</a> for more info about the player and its license.");
 $plugin_author = "Malte Müller (acrylian)";
 $plugin_disable = (getOption('album_folder_class') === 'external')?gettext('This player does not support <em>External Albums</em>.'):false;
-$plugin_version = '1.1';
+$plugin_version = '1.1.1';
 $option_interface = 'mediaelementjs_options';
 
 if (!empty($_zp_multimedia_extension->name) || $plugin_disable) {
