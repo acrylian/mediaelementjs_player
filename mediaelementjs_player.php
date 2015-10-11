@@ -19,20 +19,23 @@
  * See examples on {@link http://mediaelementjs.com} under "installation".
  *
  * Subtitle and chapter support for videos (NOTE: NOT IMPLEMENTED YET!):
- * It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:
- * subtitles file: <nameofyourvideo>_subtitles.srt
- * chapters file: <name of your video>_chapters.srt
+ * It supports .srt files. Like the counterpart formats MUST be uploaded via FTP!
  *
- * Example: yourvideo.mp4 with yourvideo_subtitles.srt and yourvideo_chapters.srt
+ * For each language a separate file must be supplied and each filename must end with with a 2-letter language code.
+ * They must follow this naming convention:
+ * subtitles file: <nameofyourvideo>_subtitles-en.srt
+ * chapters file: <name of your video>_chapters-en.srt
+ *
+ * Example: yourvideo.mp4 with yourvideo_subtitles-en.srt and yourvideo_chapters-en.srt
  *
  * CONTENT MACRO:<br>
  * Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles for example.
  *
  * Usage:
- * [MEDIAPLAYER <albumname> <imagefilename> <width> <height>]
+ * [MEDIAPLAYER <albumname> <imagefilename> <width>]
  *
  * Example:
- * [MEDIAPLAYER album1 video.mp4 400 300]
+ * [MEDIAPLAYER album1 video.mp4 400]
  *
  * <b>NOTE:</b> This player does not support external albums!
  *
@@ -507,7 +510,7 @@ class mediaelementjs_player {
 				$file = $getID3->analyze($movie->getFullImage(SERVERPATH));
 				$vwidth = $file['video']['resolution_x'];
 				$vheight = $file['video']['resolution_y'];
-				$ratio = round( ($vheight / $vwidth), 3);
+				$ratio = round( ($vheight / $vwidth), 3 );
 					if ( !empty($width) && ctype_digit($width) ) {
 						$width = $width;
 					} else {
@@ -750,7 +753,7 @@ class mediaelementjs_player {
 	 * @return mixed
 	 */
 	function playlistPlayer($mode, $albumfolder='', $count='') {
-		global $_zp_current_album, $_zp_themeroot;
+		global $_zp_current_album;
 
 		if(empty($albumfolder)) {
 			$albumobj = $_zp_current_album;
