@@ -29,15 +29,11 @@ Example: `yourvideo.mp4` with `yourvideo_subtitles-en.srt` and `yourvideo_chapte
 
 So you may for example end up with:
 
-`yourvideo.mp4`
-
-`yourvideo_subtitles-en.srt` (English subtitles)
-
-`yourvideo_subtitles-de.srt` (German subtitles)
-
-`yourvideo_subtitles-fr.srt` (French subtitles)
-
-`yourvideo_chapters-en.srt`  (English chapters)
+`yourvideo.mp4`<br />
+`yourvideo_subtitles-en.srt` (English subtitles)<br />
+`yourvideo_subtitles-de.srt` (German subtitles)<br />
+`yourvideo_subtitles-fr.srt` (French subtitles)<br />
+`yourvideo_chapters-en.srt`  (English chapters)<br />
 
 
 ###Content Macro (NOT WORKING AT THE MOMENT)<br>
