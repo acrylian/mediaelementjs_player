@@ -20,12 +20,21 @@ If you have problems with any format being recognized, you might need to tell yo
 
 ###Subtitle and chapter support for videos ~~(NOTE: NOT IMPLEMENTED YET!)~~
 It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:
-subtitles file: `<nameofyourvideo>_subtitles.srt`
-chapters file: `<name of your video>_chapters.srt`
+subtitles file: `<nameofyourvideo>_subtitles-en.srt`
+chapters file: `<name of your video>_chapters-en.srt`
 
-Example: `yourvideo.mp4` with `yourvideo_subtitles.srt` and `yourvideo_chapters.srt`
+For each language a separate file must be supplied and each filename must end with with a 2-letter language code.
 
-###Content Macro<br>
+Example: `yourvideo.mp4` with `yourvideo_subtitles-en.srt` and `yourvideo_chapters-en.srt`
+
+So you may for example end up with:
+`yourvideo.mp4`
+`yourvideo_subtitles-en.srt` (English subtitles)
+`yourvideo_subtitles-de.srt` (German subtitles)
+`yourvideo_subtitles-fr.srt` (French subtitles)
+`yourvideo_chapters-en.srt`  (English chapters)
+
+###Content Macro (NOT WORKING AT THE MOMENT)<br>
 Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles for example.
 
 ```
@@ -37,10 +46,10 @@ Example:
 
 ~~If you are using more than one player on a page you need to pass a 2nd parameter with for example an unique number:~~
 
-```
+
 ~~[MEDIAPLAYER album1 video1.mp4 1]~~
 ~~[MEDIAPLAYER album2 video2.mp4 2]~~
-```
+
 
 *NOTE:This player does not support external albums!*
 
