@@ -28,11 +28,17 @@ For each language a separate file must be supplied and each filename must end wi
 Example: `yourvideo.mp4` with `yourvideo_subtitles-en.srt` and `yourvideo_chapters-en.srt`
 
 So you may for example end up with:
+
 `yourvideo.mp4`
+
 `yourvideo_subtitles-en.srt` (English subtitles)
+
 `yourvideo_subtitles-de.srt` (German subtitles)
+
 `yourvideo_subtitles-fr.srt` (French subtitles)
+
 `yourvideo_chapters-en.srt`  (English chapters)
+
 
 ###Content Macro (NOT WORKING AT THE MOMENT)<br>
 Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles for example.
