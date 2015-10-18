@@ -40,14 +40,14 @@ So you may for example end up with:
 ###Content Macro<br>
 Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles.
 You have to supply an albumname and a filename.
-The <width> parameter is optional. If omitted, the audio/video will be 100% wide (responsive)
+The ```<width>``` parameter is optional. If omitted, the audio/video will be 100% wide (responsive)
 
 ```
 [MEDIAPLAYER <albumname> <imagefilename> <width>]
 ```
 
 Examples:<br />
-```[MEDIAPLAYER album1 video.mp4 400]``` (400px wide) or<br /> ```[MEDIAPLAYER album1 video.mp4]``` (responsive)
+```[MEDIAPLAYER album1 video.mp4 400]``` (400px wide)<br /> ```[MEDIAPLAYER album1 video.mp4]``` (responsive)
 
 ~~If you are using more than one player on a page you need to pass a 2nd parameter with for example an unique number:~~
 
