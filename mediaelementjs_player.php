@@ -446,12 +446,11 @@ class mediaelementjs_player {
 	}
 
 	/**
-	 * Get the JS configuration of Mediaelementjs_player
+	 * Get the HTML configuration of Mediaelementjs_player
 	 *
 	 * @param mixed $movie the image object
 	 * @param string $movietitle the title of the movie
-	 * @param string $width Not used, set via plugin options.
-	 * @param string $height Not used, set via plugin options.
+	 * @param string $width the width of the movie.
 	 *
 	 */
 	function getPlayerConfig($movie, $movietitle='', $width) {
@@ -758,6 +757,7 @@ class mediaelementjs_player {
 // Works on pages/news when called with "echo getPageContent()".
 // Does NOT work on pages/news when called with "printPageContent()".
 // Apparently "html_encodeTagged()" causes problems.
+// TODO: A macro for playlists...no idea how...
 	static function macro($macros) {
 		$macros['MEDIAPLAYER'] = array(
 						'class'	 => 'function',
@@ -769,11 +769,11 @@ class mediaelementjs_player {
 		return $macros;
 	}
 
-	/**Experimental
-	 * Returns the width of the player
-	 * @param object $image the image for which the height is requested (not used!)
-	 *
-	 * @return mixed
+	/**
+	 * Get the HTML configuration of Mediaelementjs playlist
+	 * @param string $mode what kind of playlist. Set to either 'audio' or 'video'
+	 * @param string $albumfolder the name of a specific album to get the mediafiles from
+	 * @param string $count number of the item to append to the id for multiple playlists on one page
 	 */
 	function playlistPlayer($mode, $albumfolder='', $count='') {
 		global $_zp_current_album;
