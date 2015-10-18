@@ -1,7 +1,7 @@
 mediaelementjs_player
 =====================
 
-An attempt to create a full fledged [Zenphoto](http://www.zenphoto.org) plugin from the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com) and the mediaelement-playlist-plugin by James McKay (https://github.com/portablejim/mediaelement-playlist-plugin)
+An attempt to create a full fledged [Zenphoto](http://www.zenphoto.org) plugin from the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com) and the mediaelement-playlist-plugin by James McKay (https://github.com/portablejim/mediaelement-playlist-plugin)<br />
 Still lots of questions and bad code...
 
 Supported file formats
