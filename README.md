@@ -1,7 +1,8 @@
 mediaelementjs_player
 =====================
 
-A [Zenphoto](http://www.zenphoto.org) plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
+An attempt to create a full fledged [Zenphoto](http://www.zenphoto.org) plugin from the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com) and the mediaelement-playlist-plugin by James McKay (https://github.com/portablejim/mediaelement-playlist-plugin)
+Still lots of questions and bad code...
 
 Supported file formats
 ----------------------
@@ -19,8 +20,8 @@ Since the flash fallback covers all essential formats this is not much of an iss
 If you have problems with any format being recognized, you might need to tell your server about the mime types first. See examples on http://mediaelementjs.com under "installation".
 
 ###Subtitle and chapter support for videos ~~(NOTE: NOT IMPLEMENTED YET!)~~
-It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:
-subtitles file: `<nameofyourvideo>_subtitles-en.srt`
+It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:<br />
+subtitles file: `<nameofyourvideo>_subtitles-en.srt`<br />
 chapters file: `<name of your video>_chapters-en.srt`
 
 For each language a separate file must be supplied and each filename must end with with a 2-letter language code.
