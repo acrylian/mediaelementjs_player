@@ -46,8 +46,8 @@ The <width> parameter is optional. If omitted, the audio/video will be 100% wide
 [MEDIAPLAYER <albumname> <imagefilename> <width>]
 ```
 
-Example:
-```[MEDIAPLAYER album1 video.mp4 400]``` (400px wide) or ```[MEDIAPLAYER album1 video.mp4]``` (responsive)
+Examples:<br />
+```[MEDIAPLAYER album1 video.mp4 400]``` (400px wide) or<br /> ```[MEDIAPLAYER album1 video.mp4]``` (responsive)
 
 ~~If you are using more than one player on a page you need to pass a 2nd parameter with for example an unique number:~~
 
