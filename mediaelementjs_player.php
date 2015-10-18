@@ -158,8 +158,8 @@ class mediaelementjs_options {
 
 // Below field should only visible when "Tracks" are enabled.
 // Best would be a dropdown with available languages...if any. Should default to "none" is no files are present.
-// Right now I have the field default to "none" if nothing is entered.
 // No idea how to do this.
+// Right now I have the field default to "none" if nothing is entered.
 			gettext('Start language') => array(
 				'key' => 'mediaelementjs_startlanguage', 'type' => OPTION_TYPE_TEXTBOX,
 				'order'=>1.1,
@@ -349,7 +349,7 @@ class mediaelementjs_player {
 		if(getOption('mediaelementjsplaylist_nexttrack')) $array[] = 'nexttrack';
 		if(getOption('mediaelementjsplaylist_loop')) $array[] = 'loop';
 		if(getOption('mediaelementjsplaylist_shuffle')) $array[] = 'shuffle';
-		$array[] = 'playlist'; // right before the progress bar
+		$array[] = 'playlist'; // plylist icon right before the progress bar
 		if(getOption('mediaelementjsplaylist_progress')) $array[] = 'progress';
 		if(getOption('mediaelementjsplaylist_current')) $array[] = 'current';
 		if(getOption('mediaelementjsplaylist_duration')) $array[] = 'duration';
@@ -437,7 +437,6 @@ class mediaelementjs_player {
 
 			// Show playlist(overlay) on pause. Also prevents a continuous loading gif at the end.
 			// May come in handy on small devices.
-			// TODO: Should not show playlist(overlay) between video's when "Repeat On/Off" is enabled ("On") by user.
 			$('video.mep_playlist').mediaelementplayer().bind('pause',function () {
 				$(this).parents('.mejs-inner').find('.mejs-playlist').show();
 			});
@@ -522,7 +521,7 @@ class mediaelementjs_player {
 				break;
 			case 'video':
 // Gets the width, height and aspect ratio of the video using the getID3 library
-// Not sure at all if this approach is correct !
+// NOT SURE AT ALL IF THIS APPROACH IS CORRECT !
 				$getID3 = new getID3;
 				$file = $getID3->analyze($movie->getFullImage(SERVERPATH));
 				$vwidth = $file['video']['resolution_x'];
@@ -554,9 +553,14 @@ class mediaelementjs_player {
 // User should take care of correct poster size to prevent too much distortion
 					$poster = ' poster="' . $movie->getCustomImage(null, $width, $height, $width, $height, null, null, true) . '"';
 				}
+				if ( $ext == 'flv' ) {
+					$type = 'video/x-flv';
+				} else {
+					$type = 'video/mp4';
+				}
 				$playerconfig  .= '
 					<video id="mediaelementjsplayer_' . $count . '" class="mep_player" width="' . $width . '" height="' . $height . '" controls="controls"' . $preload . $poster . $style .'>
-    				<source type="video/mp4" src="'.pathurlencode($moviepath).'" />'."\n";
+    				<source type="'.$type.'" src="'.pathurlencode($moviepath).'" />'."\n";
 				if ( !empty($counterparts) ) {
 					$playerconfig .= $counterparts;
 				}
@@ -796,7 +800,7 @@ class mediaelementjs_player {
 		$counteradd = '';
 		switch($mode) {
 			case 'audio':
-				$this->mode = 'audio';
+				$this->mode = 'audio'; // Must be set. Otherwise does not find counterparts.
 				$width = getOption('mediaelementjs_audioplaylistwidth');
 				$height = getOption('mediaelementjs_audioplaylistheight');
 				if ( empty($width) || !ctype_digit($width) ) { // http://php.net/manual/en/function.ctype-digit.php
@@ -817,7 +821,7 @@ class mediaelementjs_player {
 								if($counter < 10) $counteradd = '0';
 								$obj = newImage($albumobj,$file);
 // Any poster size will do for now. Gets scaled as a background image.
-// Actually need the provided full poster-image...don't know how...
+// Actually would like to get the provided full poster-image...don't know how...
 								$poster = $obj->getCustomImage(null, 640, 360, 640, 360, null, null, true);
 								$playerconfig  .= '<source type="audio/mpeg" src="'.pathurlencode($obj->getFullImageURL()).'" data-poster="'.$poster.'" title="'. $counteradd . $counter.'. ' . html_encode($obj->getTitle()).'" />'."\n";
 								$counterparts = $this->getCounterpartFiles($obj->getFullImage(FULLWEBPATH), $ext);
@@ -831,7 +835,7 @@ class mediaelementjs_player {
 				';
 				break;
 			case 'video':
-				$this->mode = 'video';
+				$this->mode = 'video'; // Must be set. Otherwise does not find counterparts.
 				$width = getOption('mediaelementjs_videoplaylistwidth');
 				$height = getOption('mediaelementjs_videoplaylistheight');
 				if ( empty($width) || !ctype_digit($width) ) {
@@ -856,10 +860,15 @@ class mediaelementjs_player {
 							if(in_array($ext,array('m4v','mp4','flv'))) {
 								$counteradd = '';
 								$counter++;
+								if ( $ext == 'flv' ) {
+									$type = 'video/x-flv';
+								} else {
+									$type = 'video/mp4';
+								}
 								if($counter < 10) { $counteradd = '0'; }
 								$obj = newImage($albumobj,$file);
 								$poster = $obj->getCustomImage(null, 640, 360, 640, 360, null, null, true);
-								$playerconfig  .= '<source type="video/mp4" src="'.pathurlencode($obj->getFullImageURL()).'" data-poster="'.$poster.'" title="'. $counteradd . $counter.'. ' . html_encode($obj->getTitle()).'" />'."\n";
+								$playerconfig  .= '<source type="'.$type.'" src="'.pathurlencode($obj->getFullImageURL()).'" data-poster="'.$poster.'" title="'. $counteradd . $counter.'. ' . html_encode($obj->getTitle()).'" />'."\n";
 								$counterparts = $this->getCounterpartFiles($obj->getFullImage(FULLWEBPATH),$ext);
 								if ( $counterparts ) {
 									$playerconfig  .= $counterparts;
