@@ -36,15 +36,17 @@ So you may for example end up with:
 `yourvideo_chapters-en.srt`  (English chapters)<br />
 
 
-###Content Macro (NOT WORKING AT THE MOMENT)<br>
-Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles for example.
+###Content Macro<br>
+Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles.
+You have to supply an albumname and a filename.
+The <width> parameter is optional. If omitted, the audio/video will be 100% wide (responsive)
 
 ```
 [MEDIAPLAYER <albumname> <imagefilename> <width>]
 ```
 
 Example:
-```[MEDIAPLAYER album1 video.mp4 400]```
+```[MEDIAPLAYER album1 video.mp4 400]``` (400px wide) or ```[MEDIAPLAYER album1 video.mp4]``` (responsive)
 
 ~~If you are using more than one player on a page you need to pass a 2nd parameter with for example an unique number:~~
 
@@ -56,7 +58,7 @@ Example:
 *NOTE:This player does not support external albums!*
 
 ###Playlist ~~(beta)~~
-Basic playlist support (adapted from portablejim (James McKay) – https://github.com/portablejim/mediaelement-playlist-plugin):
+Basic playlist support (adapted from portablejim (James McKay) – https://github.com/portablejim/mediaelement-playlist-plugin)
 Enable the option to load the playlist script support. Then call on your theme's album.php the method
 
 ```
@@ -67,4 +69,4 @@ echo $_zp_multimedia_extension->playlistPlayer('audio','',''); //audio playlist 
 
 Additionally you can set a specific albumname on the 2nd parameter to call a playlist outside of album.php
 
-*Notes*: Mixed audio and video playlists are not possible. Counterpart formats are also not supported. Also the next playlist item does not automatically play.
+*Notes*: Mixed audio and video playlists are not possible. ~~Counterpart formats are also not supported. Also the next playlist item does not automatically play.~~
