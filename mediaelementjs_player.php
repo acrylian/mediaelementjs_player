@@ -349,7 +349,7 @@ class mediaelementjs_player {
 		if(getOption('mediaelementjsplaylist_nexttrack')) $array[] = 'nexttrack';
 		if(getOption('mediaelementjsplaylist_loop')) $array[] = 'loop';
 		if(getOption('mediaelementjsplaylist_shuffle')) $array[] = 'shuffle';
-		$array[] = 'playlist'; // plylist icon right before the progress bar
+		$array[] = 'playlist'; // playlist icon right before the progress bar
 		if(getOption('mediaelementjsplaylist_progress')) $array[] = 'progress';
 		if(getOption('mediaelementjsplaylist_current')) $array[] = 'current';
 		if(getOption('mediaelementjsplaylist_duration')) $array[] = 'duration';
@@ -519,12 +519,16 @@ class mediaelementjs_player {
 				';
 				break;
 			case 'video':
-// Gets the width, height and aspect ratio of the video using the getID3 library
-// NOT SURE AT ALL IF THIS APPROACH IS CORRECT !
-				$getID3 = new getID3;
-				$file = $getID3->analyze($movie->getFullImage(SERVERPATH));
-				$vwidth = $file['video']['resolution_x'];
-				$vheight = $file['video']['resolution_y'];
+				// Gets the width, height and aspect ratio of the video using the getID3 library
+				// NOT SURE AT ALL IF THIS APPROACH IS CORRECT !
+				//$getID3 = new getID3;
+				//$file = $getID3->analyze($movie->getFullImage(SERVERPATH));
+// Apparently "VideoResolution_x" and "VideoResolution_y" (and "VideoAspect_ratio") are already stored in the DB
+// No need to call the getID3 library again
+				$vwidth = $movie->get('VideoResolution_x');
+				$vheight = $movie->get('VideoResolution_y');
+// For a number of entries the "VideoAspect_ratio" in the DB is either "1" or not calculated at all ("NULL")
+// so we use "VideoResolution_x" and "VideoResolution_y" to calculate it here
 				$ratio = round( ($vwidth / $vheight), 3 );
 					if ( !empty($width) && ctype_digit($width) ) { // http://php.net/manual/en/function.ctype-digit.php
 						$width = $width;
