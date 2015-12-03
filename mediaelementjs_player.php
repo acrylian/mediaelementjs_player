@@ -851,7 +851,6 @@ class mediaelementjs_player {
 				$backgroundposter = getOption('mediaelementjs_videoplaylistbackground');
 				if ( !empty($backgroundposter) ) {
 					$backgroundposter = ' poster="'.FULLWEBPATH.'/themes/'.getCurrentTheme().'/images/'.$backgroundposter.'"';
-					debugLogVar($backgroundposter);
 				} else {
 					$backgroundposter = '';
 				}
