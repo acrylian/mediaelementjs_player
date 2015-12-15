@@ -3,6 +3,10 @@ mediaelementjs_player
 
 A [Zenphoto](http://www.zenphoto.org) plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
 
+##Installation
+
+Place the file `mediaelementjs_player.php` and the folder of the same name into your `/plugins` folder.
+
 Supported file formats
 ----------------------
 - Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
