@@ -746,11 +746,10 @@ class mediaelementjs extends Video {
 					$height = 360;
 				}
 				$backgroundposter = getOption('mediaelementjs_videoplaylistbackground');
-				$backgroundposter_img = '';
 				if ($backgroundposter) {
 					$obj = getItembyID('images', $backgroundposter);
 					if (is_object($obj) && $obj->loaded && (zp_loggedin(VIEW_UNPUBLISHED_RIGHTS) || $obj->getShow())) {
-						$backgroundposter_img = ' poster="' . html_encode($obj->getSizedImage(640)) . '"'; // not sure which size we need here actually
+						$backgroundposter = ' poster="' . html_encode($obj->getSizedImage(640)) . '"'; // not sure which size we need here actually
 					}
 				}
 				$content = '
@@ -788,7 +787,7 @@ class mediaelementjs extends Video {
 /**
  * Theme function wrapper for user convenience of echo mediaelementjs::playlistPlayer()
  *
- * @param string $option 'audio'  und 'video'
+ * @param string $option 'audio' or 'video'
  * @param string $albumfolder album folder name to generate the playlist of
  */
 function printMediaelementjsPlaylist($option, $albumfolder, $count) {
