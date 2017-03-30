@@ -4,6 +4,8 @@ mediaelementjs_player
 A [Zenphoto](http://www.zenphoto.org) plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com) and the mediaelement-playlist-plugin by James McKay (https://github.com/portablejim/mediaelement-playlist-plugin)<br />
 It will play natively via HTML5 in capable browsers and is responsive.
 
+*NOTE:This player does not support external albums!*
+
 Supported file formats
 ----------------------
 - Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
@@ -19,7 +21,7 @@ Since the flash fallback covers all essential formats this is not much of an iss
 
 If you have problems with any format being recognized, you might need to tell your server about the mime types first. See examples on http://mediaelementjs.com under "installation".
 
-###Subtitle and chapter support for videos <del>(NOTE: NOT IMPLEMENTED YET!)</del>
+###Subtitle and chapter support for videos
 It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:<br />
 subtitles file: `<nameofyourvideo>_subtitles-en.srt`<br />
 chapters file: `<name of your video>_chapters-en.srt`
@@ -41,25 +43,9 @@ So you may for example end up with:
 Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles.
 You have to supply an albumname and a filename.
 
-<del>
-The `width` parameter is optional. If omitted, the audio/video will be 100% wide (responsive)
+Example:<br />
+`[MEDIAPLAYER album1 video.mp4]`
 
-`[MEDIAPLAYER albumname imagefilename width]`
-</del>
-<del>
-Examples:<br />
-`[MEDIAPLAYER album1 video.mp4 400]` (400px wide)
- <br />
-`[MEDIAPLAYER album1 video.mp4]` (responsive)
-</del>
-<p>
-<del>If you are using more than one player on a page you need to pass a 2nd parameter with for example an unique number:
-<br />
-[MEDIAPLAYER album1 video1.mp4 1]<br />
-[MEDIAPLAYER album2 video2.mp4 2]</del>
-
-
-*NOTE:This player does not support external albums!*
 
 ###Playlist (beta)
 Basic playlist support (adapted from portablejim (James McKay) – https://github.com/portablejim/mediaelement-playlist-plugin)
@@ -73,4 +59,4 @@ echo $_zp_multimedia_extension->playlistPlayer('audio','',''); //audio playlist 
 
 Additionally you can set a specific albumname on the 2nd parameter to call a playlist outside of album.php
 
-*Notes*: Mixed audio and video playlists are not possible. <del>Counterpart formats are also not supported. Also the next playlist item does not automatically play.</del>
+*Notes*: Mixed audio and video playlists are not possible.
