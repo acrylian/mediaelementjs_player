@@ -22,13 +22,12 @@ Since the flash fallback covers all essential formats this is not much of an iss
 If you have problems with any format being recognized, you might need to tell your server about the mime types first. See examples on http://mediaelementjs.com under "installation".
 
 ### Subtitle and chapter support for videos
+
 It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:<br />
-subtitles file: `<nameofyourvideo>_subtitles-en.srt`<br />
-chapters file: `<name of your video>_chapters-en.srt`
+subtitles file: `<name-of-your-video>_subtitles-en.srt`<br />
+chapters file: `<name-of-your-video>_chapters-en.srt`
 
 For each language a separate file must be supplied and each filename must end with with a 2-letter language code.
-
-Example: `yourvideo.mp4` with `yourvideo_subtitles-en.srt` and `yourvideo_chapters-en.srt`
 
 So you may for example end up with:
 
