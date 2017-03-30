@@ -21,7 +21,7 @@ Since the flash fallback covers all essential formats this is not much of an iss
 
 If you have problems with any format being recognized, you might need to tell your server about the mime types first. See examples on http://mediaelementjs.com under "installation".
 
-###Subtitle and chapter support for videos
+### Subtitle and chapter support for videos
 It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:<br />
 subtitles file: `<nameofyourvideo>_subtitles-en.srt`<br />
 chapters file: `<name of your video>_chapters-en.srt`
@@ -39,7 +39,7 @@ So you may for example end up with:
 `yourvideo_chapters-en.srt`  (English chapters)<br />
 
 
-###Content Macro
+### Content Macro
 Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles.
 You have to supply an albumname and a filename.
 
@@ -47,7 +47,7 @@ Example:<br />
 `[MEDIAPLAYER album1 video.mp4]`
 
 
-###Playlist (beta)
+### Playlist (beta)
 Basic playlist support (adapted from portablejim (James McKay) – https://github.com/portablejim/mediaelement-playlist-plugin)
 Enable the option to load the playlist script support. Then call the method on your theme's album.php.
 
