@@ -1,13 +1,17 @@
-mediaelementjs_player
----------------------
+# mediaelementjs_player
+-----------------------
 
 A [Zenphoto](http://www.zenphoto.org) plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com) and the mediaelement-playlist-plugin by James McKay (https://github.com/portablejim/mediaelement-playlist-plugin)<br />
 It will play natively via HTML5 in capable browsers and is responsive.
 
 *NOTE:This player does not support external albums!*
 
-Supported file formats
-----------------------
+### Installation
+
+Place the file `mediaelementjs_player.php` and the folder of the same name into your `/plugins` folder.
+
+### Supported file formats
+
 - Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
 - Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
 
@@ -58,4 +62,4 @@ echo $_zp_multimedia_extension->playlistPlayer('audio','',''); //audio playlist 
 
 Additionally you can set a specific albumname on the 2nd parameter to call a playlist outside of album.php
 
-*Note*: Mixed audio and video playlists are not possible.
+*NOTE*: Mixed audio and video playlists are not possible.
