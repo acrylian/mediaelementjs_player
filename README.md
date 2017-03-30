@@ -37,7 +37,7 @@ So you may for example end up with:
 `yourvideo_chapters-en.srt`  (English chapters)<br />
 
 
-###Content Macro (Still not working correctly!)<br>
+###Content Macro
 Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles.
 You have to supply an albumname and a filename.
 
