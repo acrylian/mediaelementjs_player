@@ -61,7 +61,7 @@ Examples:<br />
 
 *NOTE:This player does not support external albums!*
 
-###Playlist (beta)###
+###Playlist (beta)
 Basic playlist support (adapted from portablejim (James McKay) – https://github.com/portablejim/mediaelement-playlist-plugin)
 Enable the option to load the playlist script support. Then call the method on your theme's album.php.
 
