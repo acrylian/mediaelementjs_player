@@ -59,4 +59,4 @@ echo $_zp_multimedia_extension->playlistPlayer('audio','',''); //audio playlist 
 
 Additionally you can set a specific albumname on the 2nd parameter to call a playlist outside of album.php
 
-*Notes*: Mixed audio and video playlists are not possible.
+*Note*: Mixed audio and video playlists are not possible.
