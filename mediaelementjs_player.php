@@ -3,84 +3,83 @@
  * Support for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com - license: MIT).
  * It will play natively via HTML5 in capable browsers and is responsive.
  *
- * Audio: <var>.mp3</var>, <var>.m4a</var> - Sidecar counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
- * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Sidecar counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
+ * Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
+ * Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
  *
- * IMPORTANT NOTE ON OGG AND WEBM COUNTERPART FORMATS:<br>
- * The files need to have the same file name (beware of the character case!). In single player usage, the player
+ * IMPORTANT NOTE ON OGG AND WEBM COUNTERPART FORMATS:
+ * The counterpart formats are not valid formats for Zenphoto itself and not recognized as items as that would confuse the management.
+ * Therefore these formats can be uploaded via FTP only.
+ * The files need to have the same file name (beware the character case!). In single player usage, the player
  * will check via the file system if a counterpart file exists and if counterpart support is enabled.
  * Firefox seems to prefer the <var>.oga</var> and <var>.ogv</var> while Chrome <var>.webma</var> and <var>.webmv</var>
  *
  * Since the flash fallback covers all essential formats this is not much of an issue for visitors though.
  *
- * If you have problems with any format being recognized, you may need to tell your server about the mime types first:
+ * If you have problems with any format being recognized, you might need to tell your server about the mime types first:
  * See examples on {@link http://mediaelementjs.com} under "installation".
  *
- * Subtitle and chapter support for videos.
- * It supports .srt files. These are sidecar files like the counterpart formats.
+ * Subtitle and chapter support for videos (NOTE: NOT IMPLEMENTED YET!):
+ * It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:
+ * subtitles file: <nameofyourvideo>_subtitles.srt
+ * chapters file: <name of your video>_chapters.srt
  *
- * For each language a separate file must be supplied and each filename must end with with a 2-letter language code.<br>
- * They must follow this naming convention:<br>
- * subtitles file: <nameofyourvideo>_subtitles-en.srt<br>
- * chapters file: <name of your video>_chapters-en.srt
- *
- * Example: yourvideo.mp4 with yourvideo_subtitles-en.srt and yourvideo_chapters-en.srt
+ * Example: yourvideo.mp4 with yourvideo_subtitles.srt and yourvideo_chapters.srt
  *
  * CONTENT MACRO:<br>
  * Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles for example.
- * You have to supply an albumname and a filename.
- * The audio/video is responsive by default
  *
  * Usage:
- * [MEDIAPLAYER <albumname> <imagefilename>]
+ * [MEDIAPLAYER <albumname> <imagefilename> <number> <width> <height>]
  *
  * Example:
- * [MEDIAPLAYER album1 video.mp4]
+ * [MEDIAPLAYER album1 video.mp4 400 300]
  *
  * <b>NOTE:</b> This player does not support external albums!
  *
  * Playlist (beta):
- * Basic playlist support (adapted from James McKay - https://github.com/portablejim/mediaelement-playlist-plugin):
- * Enable the option to load the playlist script support.<br>
- * Then call on your theme's album.php the function:<br>
- * printMediaelementjsPlaylist('video', '', '');<br>(video playlist using all available .mp4, .m4v, .flv files only)<br>
- * printMediaelementjsPlaylist('audio', '', '');<br>(audio playlist using all available .mp3, .m4a files only)
- *
+ * Basic playlist support (adapted from Andrew Berezovsky – https://github.com/duozersk/mep-feature-playlist):
+ * Enable the option to load the playlist script support. Then call on your theme's album.php the method $_zp_multimedia_extension->playlistPlayer();
+ * echo $_zp_multimedia_extension->playlistPlayer('video','',''); //video playlist using all available .mp4, .m4v, .flv files only
+ * echo $_zp_multimedia_extension->playlistPlayer('audio','',''); //audio playlist using all available .mp3, .m4a files only
  * Additionally you can set a specific albumname on the 2nd parameter to call a playlist outside of album.php
  *
- * Notes: Mixed audio and video playlists are not possible.
+ * Notes: Mixed audio and video playlists are not possible. Counterpart formats are also not supported. Also the next playlist item does not automatically play.
  *
- * @author Malte Müller (acrylian), Fred Sondaar (fretzl)
+ * @author Malte Müller (acrylian) <info@maltem.de>
+ * @copyright 2014 Malte Müller
  * @license GPL v3 or later
  * @package plugins
  * @subpackage media
  */
 $plugin_is_filter = 5 | CLASS_PLUGIN;
-$plugin_description = gettext("Enable <strong>mediaelement.js</strong> to handle multimedia files.") . gettext("Please see <a href='http://http://mediaelementjs.com'>mediaelementjs.com</a> for more info about the player and its license.");
-$plugin_notice = gettext("<strong>IMPORTANT</strong>: Only one multimedia extension plugin can be enabled at the time.");
-$plugin_author = "Malte Müller (acrylian), Fred Sondaar (fretzl)";
+$plugin_description = gettext("Enable <strong>mediaelement.js</strong> to handle multimedia files.");
+$plugin_notice = gettext("<strong>IMPORTANT</strong>: Only one multimedia player plugin can be enabled at the time and the class-video plugin must be enabled, too.").'<br /><br />'.gettext("Please see <a href='http://http://mediaelementjs.com'>mediaelementjs.com</a> for more info about the player and its license.");
+$plugin_author = "Malte Müller (acrylian)";
 $plugin_disable = (getOption('album_folder_class') === 'external')?gettext('This player does not support <em>External Albums</em>.'):false;
+$plugin_version = '1.1.1';
 $option_interface = 'mediaelementjs_options';
 
-if ($_zp_mediaplayer || $plugin_disable) {
+if (!empty($_zp_multimedia_extension->name) || $plugin_disable) {
 	enableExtension('mediaelementjs_player', 0);
-} else {
-	$_zp_mediaplayer = 'mediaelementjs';
-	Gallery::addImageHandlers(mediaelementjs::getSuffixes(), 'mediaelementjs');
-	Gallery::addSidecarHandlers(mediaelementjs::getCounterpartSuffixes(), 'mediaelementjs');
-	zp_register_filter('upload_filetypes', 'mediaelementjs::registerSidecarsUpload');
 
-	zp_register_filter('theme_head', 'mediaelementjs::scripts');
-	if (getOption('mediaelementjs_playlist')) {
-		zp_register_filter('theme_head', 'mediaelementjs::playlistScripts');
+//NOTE: the following text really should be included in the $plugin_disable statement above so that it is visible
+//on the plugin tab
+
+	if (isset($_zp_multimedia_extension)) {
+		trigger_error(sprintf(gettext('Mediaelementjs_player not enabled, %s is already instantiated.'), get_class($_zp_multimedia_extension)), E_USER_NOTICE);
 	}
+} else {
+	Gallery::addImageHandler('flv', 'Video');
+	Gallery::addImageHandler('mp3', 'Video');
+	Gallery::addImageHandler('mp4', 'Video');
+	Gallery::addImageHandler('m4v', 'Video');
+	Gallery::addImageHandler('m4a', 'Video');
+	zp_register_filter('content_macro', 'mediaelementjs_player::macro');
 }
 
 class mediaelementjs_options {
 
 	function __construct() {
-		setOptionDefault('mediaelementjs_skin', 'mediaelementplayer');
-		setOptionDefault('mediaelementjs_showcontrols', 1);
 		setOptionDefault('mediaelementjs_playpause', 1);
 		setOptionDefault('mediaelementjs_progress', 1);
 		setOptionDefault('mediaelementjs_current', 1);
@@ -88,599 +87,566 @@ class mediaelementjs_options {
 		setOptionDefault('mediaelementjs_tracks', 0);
 		setOptionDefault('mediaelementjs_volume', 1);
 		setOptionDefault('mediaelementjs_fullscreen', 1);
+		setOptionDefault('mediaelementjs_videowidth', '100%');
+		setOptionDefault('mediaelementjs_videoheight', 270);
+		setOptionDefault('mediaelementjs_audiowidth', '100%');
+		setOptionDefault('mediaelementjs_audioheight', 30);
 		setOptionDefault('mediaelementjs_preload', 0);
 		setOptionDefault('mediaelementjs_poster', 1);
-		setOptionDefault('mediaelementjs_audioposter', 1);
-		setOptionDefault('mediaelementjs_audioposterwidth', 640);
+		setOptionDefault('mediaelementjs_videoposterwidth', 640);
+		setOptionDefault('mediaelementjs_videoposterheight', 360);
+    	setOptionDefault('mediaelementjs_audioposter', 1);
+    	setOptionDefault('mediaelementjs_audiopostercrop', 0);
+    	setOptionDefault('mediaelementjs_audioposterwidth', 640);
 		setOptionDefault('mediaelementjs_audioposterheight', 360);
-		setOptionDefault('mediaelementjs_preload', 0);
-		// Playlist
 		setOptionDefault('mediaelementjs_playlist', 0);
-		setOptionDefault('mediaelementjs_playlist_showcontrols', 1);
-		setOptionDefault('mediaelementjs_playlist_prevtrack', 1);
-		setOptionDefault('mediaelementjs_playlist_playpause', 1);
-		setOptionDefault('mediaelementjs_playlist_nexttrack', 1);
-		setOptionDefault('mediaelementjs_playlist_loop', 0);
-		setOptionDefault('mediaelementjs_playlist_shuffle', 1);
-		setOptionDefault('mediaelementjs_playlist_progress', 1);
-		setOptionDefault('mediaelementjs_playlist_current', 1);
-		setOptionDefault('mediaelementjs_playlist_duration', 1);
-		setOptionDefault('mediaelementjs_playlist_volume', 1);
-		setOptionDefault('mediaelementjs_playlist_fullscreen', 1);
-		setOptionDefault('mediaelementjs_videoplaylistbackground', '');
-		setOptionDefault('mediaelementjs_playlist_preload', 1); // Otherwise Safari does not play well
 	}
 
 	function getOptionsSupported() {
-		$skins = mediaelementjs::getSkins();
+		//$skins = getMediaelementjsSkins();
  		return array(
- 			gettext('Player skin') => array('key'	=> 'mediaelementjs_skin', 'type' => OPTION_TYPE_SELECTOR,
- 				'order' => 0,
-				'selections' => $skins,
-				'desc'	=> gettext("Select the skin (theme) to use. You can place custom skins within /plugins/mediaelementjs_player/skins/yourcustomskinfolder")),
-
- 			array('type' => OPTION_TYPE_NOTE,
-				'order' => 0.1,
-				'desc' => gettext("<h2>Single audio and video options</h2>")),
-
  			gettext('Control bar') => array(
 				'key' => 'mediaelementjs_controlbar',
 				'type' => OPTION_TYPE_CHECKBOX_UL,
-				'order' => 1,
+				'order' => 0,
 				'checkboxes' => array( // The definition of the checkboxes
-					gettext('Play/Pause')	=>	'mediaelementjs_playpause',
-					gettext('Progress')	=>	'mediaelementjs_progress',
-					gettext('Current')	=>	'mediaelementjs_current',
-					gettext('Duration')	=>	'mediaelementjs_duration',
-					gettext('Subtitles (Video only)')	=>	'mediaelementjs_tracks',
-					gettext('Volume')	=>	'mediaelementjs_volume',
-					gettext('Fullscreen')	=>	'mediaelementjs_fullscreen',
-					gettext('Always show controls')	=>	'mediaelementjs_showcontrols'
+					gettext('Play/Pause')=>'mediaelementjs_playpause',
+					gettext('Progress')=>'mediaelementjs_progress',
+					gettext('Current')=>'mediaelementjs_current',
+					gettext('Duration')=>'mediaelementjs_duration',
+					gettext('Tracks (Video only)')=>'medialementjs_tracks',
+					gettext('Volume')=>'mediaelementjs_volume',
+					gettext('Fullscreen')=>'mediaelementjs_fullscreen',
+					gettext('Always show controls')=>'mediaelementjs_showcontrols'
 				),
-				'desc' => gettext('Enable what should be visible in the player control bar.')),
+				'desc' => gettext('Enable what should be shown in the player control bar.')),
+			gettext('Video width') => array(
+				'key' => 'mediaelementjs_videowidth', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>1,
+				'desc' => gettext('Pixel value or percent for responsive layouts')),
+			gettext('Video height') => array(
+				'key' => 'mediaelementjs_videoheight', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>2,
+				'desc' => gettext('Pixel value or percent for responsive layouts')),
 			gettext('Video Poster') => array(
 				'key' => 'mediaelementjs_poster', 'type' => OPTION_TYPE_CHECKBOX,
-				'order'=>4,
+				'order'=>3,
 				'desc' => gettext('If a poster of the videothumb should be shown. This is cropped to fit the player size as the player would distort image not fitting the player dimensions otherwise.')),
+			gettext('Video poster width') => array(
+				'key' => 'mediaelementjs_videoposterwidth', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>4,
+				'desc' => gettext('Max width of the video poster (px). Image will be sized automatially in responsive layouts. Might require theme CSS changes to work correctly.')),
+			gettext('Video poster height') => array(
+				'key' => 'mediaelementjs_videoposterheight', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>5,
+				'desc' => gettext('Height of the video poster (px). Image will be sized automatially in responsive layouts. Might require theme CSS changes to work correctly.')),
+			gettext('Audio width') => array(
+				'key' => 'mediaelementjs_audiowidth', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>6,
+				'desc' => gettext('Pixel value or set 100% for responsive layouts (default).')),
+			gettext('Audio height') => array(
+				'key' => 'mediaelementjs_audioheight', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>7,
+				'desc' => gettext('Pixel value or 100% for responsive layouts (default).')),
       		gettext('Audio poster') => array(
 				'key' => 'mediaelementjs_audioposter', 'type' => OPTION_TYPE_CHECKBOX,
-				'order'=>9,
+				'order'=>8,
 				'desc' => gettext('If an image of the videothumb should be shown with audio files. You need to set the width/height. This is cropped to fit the size.')),
       		gettext('Audio poster width') => array(
 				'key' => 'mediaelementjs_audioposterwidth', 'type' => OPTION_TYPE_TEXTBOX,
-				'order'=>10,
-				'desc' => gettext('Max width of the audio poster (px). Image will be sized automatially in responsive layouts. May require theme CSS changes to work correctly.')),
+				'order'=>9,
+				'desc' => gettext('Max width of the audio poster (px). Image will be sized automatially in responsive layouts. Might require theme CSS changes to work correctly.')),
 			gettext('Audio poster height') => array(
 				'key' => 'mediaelementjs_audioposterheight', 'type' => OPTION_TYPE_TEXTBOX,
+				'order'=>10,
+				'desc' => gettext('Height of the audio poster (px). Image will be sized automatially in responsive layouts. Might require theme CSS changes to work correctly.')),
+			gettext('Playlist support') => array(
+				'key' => 'mediaelementjs_playlist', 'type' => OPTION_TYPE_CHECKBOX,
 				'order'=>11,
-				'desc' => gettext('Height of the audio poster (px). Image will be sized automatially in responsive layouts. May require theme CSS changes to work correctly.')),
+				'desc' => gettext('If enabled the script for playlist support is loaded. For playlists either use the macro or modify your theme.')),
 			gettext('Preload') => array(
 				'key' => 'mediaelementjs_preload', 'type' => OPTION_TYPE_CHECKBOX,
 				'order'=>12,
-				'desc' => gettext('If the files should be preloaded (Note: if this works is browser dependent and may not work in all!).')),
-
-			// Playlist
-			array('type' => OPTION_TYPE_NOTE,
-				'order' => 50,
-				'desc' => gettext("<h2>Playlist options</h2>")),
-
-			gettext('Playlist support') => array(
-				'key' => 'mediaelementjs_playlist', 'type' => OPTION_TYPE_CHECKBOX,
-				'order'=>51,
-				'desc' => gettext('If enabled the script for playlist support is loaded. For playlists either use the macro or modify your theme.')),
-			gettext('Playlist control bar') => array(
-				'key' => 'mediaelementjs_playlist_controlbar',
-				'type' => OPTION_TYPE_CHECKBOX_UL,
-				'order' =>52,
-				'checkboxes' => array( // The definition of the checkboxes
-					gettext('Previous track')	=>	'mediaelementjs_playlist_prevtrack',
-					gettext('Play/Pause')	=>	'mediaelementjs_playlist_playpause',
-					gettext('Next track')	=>	'mediaelementjsp_laylist_nexttrack',
-					gettext('Loop')	=>	'mediaelementjs_playlist_loop',
-					gettext('Shuffle')	=>	'mediaelementjs_playlist_shuffle',
-					gettext('Progress')	=>	'mediaelementjs_playlist_progress',
-					gettext('Current')	=>	'mediaelementjs_playlist_current',
-					gettext('Duration')	=>	'mediaelementjs_playlist_duration',
-					gettext('Volume')	=>	'mediaelementjs_playlist_volume',
-					gettext('Fullscreen')	=>	'mediaelementjs_playlist_fullscreen',
-					gettext('Always show controls')	=>	'mediaelementjs_playlist_showcontrols'
-				),
-				'desc' => gettext('Enable what should be visible in the playlist control bar.')),
-			gettext('Playlist video background') => array(
-				'key' => 'mediaelementjs_videoplaylistbackground', 'type' => OPTION_TYPE_GALLERY,
-				'order' => 56.1,
-				'desc' => gettext('Background image for the video playlist. Only shows at startup.')),
-			gettext('Playlist preload') => array(
-				'key' => 'mediaelementjs_playlist_preload', 'type' => OPTION_TYPE_CHECKBOX,
-				'order'=>57,
-				'desc' => gettext('If the files should be preloaded (Note: if this works is browser dependent and may not work in all!).')),
+				'desc' => gettext('If the files should be preloaded (Note if this works is browser dependent and might not work in all!).'))
 
 		);
 	}
 }
+/** NOT USED YET
+ * Gets the skin names and css files
+ *
+ */
+function getMediaelementjsSkins() {
+	$all_skins = array();
+	$default_skins_dir = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/';
+	$user_skins_dir = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/';
+	$filestoignore = array( '.', '..','.DS_Store','Thumbs.db','.htaccess','.svn');
+	$skins = array_diff(scandir($default_skins_dir),array_merge($filestoignore));
+	$default_skins = getMediaelementjsSkinCSS($skins,$default_skins_dir);
+	//echo "<pre>";print_r($default_skins);echo "</pre>";
+	$skins2 = @array_diff(scandir($user_skins_dir),array_merge($filestoignore));
+	if(is_array($skins2)) {
+		$user_skins = getMediaelementjsSkinCSS($skins2,$user_skins_dir);
+		//echo "<pre>";print_r($user_skins);echo "</pre>";
+		$default_skins = array_merge($default_skins,$user_skins);
+	}
+	return $default_skins;
+}
+/** NOT USED YET
+ * Gets the css files for a skin. Helper function for getMediaelementjsSkins().
+ *
+ */
+function getMediaelementjsSkinCSS($skins,$dir) {
+	$skin_css = array();
+	foreach($skins as $skin) {
+		$css = safe_glob($dir.'/'.$skin.'/*.css');
+		if($css) {
+			$skin_css = array_merge($skin_css,array($skin => $css[0]));	// a skin should only have one css file so we just use the first found
+		}
+	}
+	return $skin_css;
+}
 
-class mediaelementjs extends Video {
 
+
+class mediaelementjs_player {
 	public $mode = '';
 
-	function __construct($album, $filename, $quiet = false) {
-		global $_zp_supported_images;
-		parent::__construct($album, $filename, $quiet);
-		switch ($this->suffix) {
-			case 'm4a':
-			case 'mp3':
-				$this->mode = 'audio';
-				break;
-			case 'mp4':
-			case 'm4v':
-			case 'flv':
-			case 'yt':
-				$this->mode = 'video';
-				break;
-		}
+	function __construct() {
+
 	}
 
-	/**
-	 * Gets the skin names and css files. The css file must be minified and named accordingly (*.min.css)
-	 *
-	 */
-	static function getSkins() {
-		$default_skins = array(
-				'Mediaelement default skin' => SERVERPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER . '/mediaelementjs_player/mediaelementplayer.min.css'
-		);
-		$user_skins_dir = SERVERPATH . '/' . USER_PLUGIN_FOLDER . '/mediaelementjs_player/skins/';
-		$filestoignore = array('.', '..', '.DS_Store', 'Thumbs.db', '.htaccess', '.svn');
-		$skins2 = @array_diff(scandir($user_skins_dir), array_merge($filestoignore));
-		if (is_array($skins2)) {
-			$user_skins = self::getCSS($skins2, $user_skins_dir);
-			$default_skins = array_merge($default_skins, $user_skins);
-		}
-		return $default_skins;
-	}
-
-	/**
-	 * Gets the css files for a skin. Helper function for getSkins().
-	 *
-	 */
-	static function getCSS($skins, $dir) {
-		$skin_css = array();
-		foreach ($skins as $skin) {
-			$css = safe_glob($dir . $skin . '/*.css');
-			if ($css) {
-				$skin_css = array_merge($skin_css, array($skin => $css[0])); // a skin should only have one css file so we just use the first found
-			}
-		}
-		return $skin_css;
-	}
-	/**
-	 * Gets an array of suffixes of the supported format
-	 * @param string $which Unused
-	 * @return array
-	 */
-	static function getSuffixes($which = '') {
-		return array('mp4', 'm4v', 'm4a', 'mp3', 'flv', 'yt');
-	}
-		/**
-	 * Register suffixes for uploaders
-	 *
-	 * @param array $types array of suffixes
-	 * @return array
-	 */
-	static function registerSidecarsUpload($types) {
-		$types = array_merge($types, array('srt'));
-		return $types;
-	}
-
-	/**
-	 * Returns the image file name for the thumbnail image.
-	 *
-	 * @param string $path override path
-	 *
-	 * @return string
-	 */
-	function getThumbImageFile($path = NULL) {
-		global $_zp_gallery;
-		if (is_null($path)) {
-			$path = SERVERPATH;
-		}
-		if (is_null($this->objectsThumb)) {
-			switch ($this->suffix) {
-				case "mp3":
-					$img = 'mp3Default.png';
-					break;
-				case "m4a":
-					$img = 'm4aDefault.png';
-					break;
-				case "mp4": // generic suffix for mp4 stuff - considered video
-					$img = 'mp4Default.png';
-					break;
-				case "m4v": // specific suffix for mp4 video
-				case "yt":
-					$img = 'm4vDefault.png';
-					break;
-				case "flv":
-					$img = 'flvDefault.png';
-					break;
-			}
-			$imgfile = $path . '/' . THEMEFOLDER . '/' . internalToFilesystem($_zp_gallery->getCurrentTheme()) . '/images/' . $img;
-			if (!file_exists($imgfile)) { // first check if the theme has a default image
-				$imgfile = $path . "/" . USER_PLUGIN_FOLDER . '/mediaelementjs_player/' . $img;
-				if (!file_exists($imgfile)) { // check user plugin folder, otherwise use core default
-					$imgfile = $path . "/" . ZENFOLDER . '/' . PLUGIN_FOLDER . '/mediaelementjs_player/defaultimages/' . $img;
-				}
-			}
-		} else {
-			$imgfile = ALBUM_FOLDER_SERVERPATH . internalToFilesystem($this->imagefolder) . '/' . $this->objectsThumb;
-		}
-		return $imgfile;
-	}
-
-	/**
-	 * Gets the controls for the player as set via options
-	 * @param string $mode 'single' normal single player, 'playlist'
-	 * @return string
-	 */
-	static function getPlayerControls($mode) {
+	static function getFeatureOptions() {
 		$array = array();
-		switch ($mode) {
-			case 'single':
-				if (getOption('mediaelementjs_playpause')) {
-					$array[] = 'playpause';
-				}
-				if (getOption('mediaelementjs_progress')) {
-					$array[] = 'progress';
-				}
-				if (getOption('mediaelementjs_current')) {
-					$array[] = 'current';
-				}
-				if (getOption('mediaelementjs_duration')) {
-					$array[] = 'duration';
-				}
-				if (getOption('mediaelementjs_tracks')) {
-					$array[] = 'tracks';
-				}
-				if (getOption('mediaelementjs_volume')) {
-					$array[] = 'volume';
-				}
-				if (getOption('mediaelementjs_fullscreen')) {
-					$array[] = 'fullscreen';
-				}
-				break;
-			case 'playlist':
-				$array[] = 'playlistfeature'; //required
-				if (getOption('mediaelementjs_playlist_prevtrack')) {
-					$array[] = 'prevtrack';
-				}
-				if (getOption('mediaelementjs_playlist_playpause')) {
-					$array[] = 'playpause';
-				}
-				if (getOption('mediaelementjs_playlist_nexttrack')) {
-					$array[] = 'nexttrack';
-				}
-				if (getOption('mediaelementjs_playlist_loop')) {
-					$array[] = 'loop';
-				}
-				if (getOption('mediaelementjs_playlist_shuffle')) {
-					$array[] = 'shuffle';
-				}
-				$array[] = 'playlist'; // playlist icon
-				if (getOption('mediaelementjs_playlist_progress')) {
-					$array[] = 'progress';
-				}
-				if (getOption('mediaelementjs_playlist_current')) {
-					$array[] = 'current';
-				}
-				if (getOption('mediaelementjs_playlist_duration')) {
-					$array[] = 'duration';
-				}
-				if (getOption('mediaelementjs_playlist_volume')) {
-					$array[] = 'volume';
-				}
-				if (getOption('mediaelementjs_playlist_fullscreen')) {
-					$array[] = 'fullscreen';
-				}
-				break;
-		}
+		if(getOption('mediaelementjs_playpause')) $array[] = 'playpause';
+		if(getOption('mediaelementjs_progress')) $array[] = 'progress';
+		if(getOption('mediaelementjs_current')) $array[] = 'current';
+		if(getOption('mediaelementjs_duration')) $array[] = 'duration';
+		if(getOption('medialementjs_tracks')) $array[] = 'tracks';
+		if(getOption('mediaelementjs_volume')) $array[] = 'volume';
+		if(getOption('mediaelementjs_fullscreen')) $array[] = 'fullscreen';
 		$count = '';
 		$featurecount = count($array);
 		$features = '';
-		foreach ($array as $f) {
+		foreach($array as $f) {
 			$count++;
-			$features .= "'" . $f . "'";
-			if ($count != $featurecount) {
+			$features .= "'".$f."'";
+			if($count != $featurecount) {
 				$features .= ',';
 			}
 		}
 		return $features;
 	}
 
-	/**
-	 * mediaelememtjs scripts
-	 */
-	static function scripts() {
+	static function mediaelementjs_js() {
+		/*
 		$skin = getOption('mediaelementjs_skin');
-		if (file_exists($skin)) {
-			$skin = str_replace(SERVERPATH, FULLWEBPATH, $skin); //replace SERVERPATH as that does not work as a CSS link
+		if(file_exists($skin)) {
+			$skin = str_replace(SERVERPATH,FULLWEBPATH,$skin); //replace SERVERPATH as that does not work as a CSS link
 		} else {
-			$skin = FULLWEBPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER . '/mediaelementjs_player/skin/mediaelementplayer/mediaelementplayer.min.css';
+			$skin = FULLWEBPATH.'/'.ZENFOLDER.'/'.PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
 		}
-		$features = mediaelementjs::getPlayerControls('single');
-		if (getOption('mediaelementjs_showcontrols')) {
+		*/
+		$skin = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
+		$features = mediaelementjs_player::getFeatureOptions();
+		if(getOption('mediaelementjs_showcontrols')) {
 			$showcontrols = 'true';
 		} else {
 			$showcontrols = 'false';
 		}
-
 		?>
 		<link href="<?php echo $skin; ?>" rel="stylesheet" type="text/css" />
-		<script type="text/javascript" src="<?php echo FULLWEBPATH .'/'.ZENFOLDER . '/' . PLUGIN_FOLDER; ?>/mediaelementjs_player/mediaelement-and-player.min.js"></script>
+		<script type="text/javascript" src="<?php echo FULLWEBPATH .'/'.USER_PLUGIN_FOLDER; ?>/mediaelementjs_player/mediaelement-and-player.min.js"></script>
 		<script>
 			$(document).ready(function(){
 				$('audio.mep_player,video.mep_player').mediaelementplayer({
 					alwaysShowControls: <?php echo $showcontrols; ?>,
-					features: [<?php echo $features; ?>],
-					showPosterWhenEnded: true,
-					// subtitles
-					<?php
-						if (getOption('mediaelementjs_tracks')) {
-							$locale = getUserLocale();
-							$lang = substr(getHyphenLocale($locale), 0, 2);
-							echo "startLanguage: '$lang'\n";
-						}
-					?>
+					features: [<?php echo $features; ?>]
 				});
 			});
 		</script>
 		<?php
 	}
-	/**
-	 * mediaelememtjs scripts for playlist addon
-	 */
-	static function playlistScripts() {
-		$playlistfeatures = mediaelementjs::getPlayerControls('playlist');
-		if (getOption('mediaelementjs_playlist_showcontrols')) {
-			$showcontrols = 'true';
-		} else {
-			$showcontrols = 'false';
-		}
+
+	static function mediaelementjs_playlist_js() {
+		//$features = mediaelementjs_player::getFeatureOptions();
+		$playlistfeatures = "'playlistfeature', 'prevtrack', 'playpause', 'nexttrack', 'loop', 'shuffle', 'playlist', 'current', 'progress', 'duration', 'volume'";
+		//if(!empty($features)) {
+		//	$playlistfeatures .= $playlistfeatures.','.$features;
+		//}
+		if(getOption('mediaelementjs_showcontrols')) {
+				$showcontrols = 'true';
+			} else {
+				$showcontrols = 'false';
+			}
 		?>
-		<link href="<?php echo FULLWEBPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER; ?>/mediaelementjs_player/mediaelement-playlist-plugin.css" rel="stylesheet" type="text/css" />
-		<script type="text/javascript" src="<?php echo FULLWEBPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER; ?>/mediaelementjs_player/mediaelement-playlist-plugin.js"></script>
+		<link href="<?php echo FULLWEBPATH.'/'.USER_PLUGIN_FOLDER; ?>/mediaelementjs_player/mep-feature-playlist.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="<?php echo FULLWEBPATH .'/'.USER_PLUGIN_FOLDER; ?>/mediaelementjs_player/mep-feature-playlist.js"></script>
 		<script>
 		$(document).ready(function(){
 			$('audio.mep_playlist,video.mep_playlist').mediaelementplayer({
 				alwaysShowControls: <?php echo $showcontrols; ?>,
+				loop: false,
+				shuffle: false,
+				playlist: true,
+				playlistposition: 'top',
 				features: [<?php echo $playlistfeatures; ?>],
-				audioVolume: 'vertical' // need to specify, otherwise won't show.
-			});
-
-			// Show playlist(overlay) on pause. Also prevents a continuous loading gif at the end.
-			// May come in handy on small devices.
-			$('video.mep_playlist').mediaelementplayer().on('pause',function () {
-				$(this).parents('.mejs-inner').find('.mejs-playlist').show();
 			});
 		});
-		</script>
+			</script>
 		<?php
 	}
 
 	/**
-	 * Get the HTML configuration of Mediaelementjs_player
+	 * Get the JS configuration of Mediaelementjs_player
+	 *
+	 * @param mixed $movie the image object
+	 * @param string $movietitle the title of the movie
+	 * @param string $width Not used, set via plugin options.
+	 * @param string $height Not used, set via plugin options.
 	 *
 	 */
-	function getContent($width = NULL, $height = NULL) {
-		global $_zp_current_image;
-		$count = $this->getID();
-		$moviepath = $this->getFullImage(FULLWEBPATH);
-		$movietitle = $this->getTitle();
-		$suffixes = self::getSuffixes();
-		$type = getMimeString($this->suffix);
-		if (!in_array($this->suffix, $suffixes)) {
-			echo '<p>' . gettext('This multimedia format is not supported by mediaelement.js.') . '</p>';
+	function getPlayerConfig($movie, $movietitle='', $width, $height) {
+    global $_zp_current_image;
+		$moviepath = $movie->getFullImage(FULLWEBPATH);
+		$ext = getSuffix($moviepath);
+		if(!in_array($ext,array('m4a','m4v','mp3','mp4','flv'))) {
+			echo '<p>'.gettext('This multimedia format is not supported by mediaelement.js.').'</p>';
 			return NULL;
 		}
-		if (getOption('mediaelementjs_preload')) {
-			$preload = ' preload="metadata"';
+		switch($ext) {
+			case 'm4a':
+			case 'mp3':
+				$this->mode = 'audio';
+			  break;
+			case 'mp4':
+			case 'm4v':
+			case 'flv':
+				$this->mode = 'video';
+			  break;
+		}
+    if(is_object($_zp_current_image) || empty($width)) {
+      $width = $this->getWidth();
+    }
+    if(is_object($_zp_current_image) || empty($height)) {
+      $height = $this->getHeight();
+    }
+		if($width == '100%') {
+			$style = ' style="max-width: 100%"';
+			$posterwidth = 600;
+		} else {
+			$style = '';
+		}
+
+		$count = $movie->getID();
+
+		if(getOption('mediaelementjs_preload')) {
+			$preload = ' preload="preload"';
 		} else {
 			$preload = ' preload="none"';
 		}
-		$content = '';
-		$counterparts = $this->getCounterpartCode();
-		switch ($this->mode) {
+    $playerconfig = '';
+		$counterparts = $this->getCounterpartFiles($moviepath,$ext);
+		switch($this->mode) {
 			case 'audio':
-				$width = 1280;
-				$height = 30; // Fixed height. Do not see the need for a "height" option
-				$style = ' style="max-width: 100%"';
-
+				$poster = '';
 				if (getOption('mediaelementjs_audioposter')) {
-					$posterwidth = getOption('mediaelementjs_audioposterwidth');
-					$posterheight = getOption('mediaelementjs_audioposterheight');
-					if (empty($posterwidth) || empty($posterheight)) {
-						$content .= '<img class="mediaelementjs_audioposter" src="' . $this->getThumb() . '" alt="">' . "\n";
-					} else {
-						if (is_null($this->objectsThumb)) {
-							$content .= '<img class="mediaelementjs_audioposter" src="' . $this->getCustomImage(250, null, null, null, null, null, null, true, null) . '" alt="" width="250" height="250">' . "\n";
-						} else {
-							$content .= '<img class="mediaelementjs_audioposter" src="' . $this->getCustomImage(NULL, $posterwidth, $posterheight, $posterwidth, $posterheight, null, null, true, null) . '" alt="" width="' . $posterwidth . '" height="' . $posterheight . '">' . "\n";
-						}
-					}
-				}
-				$content .= '
-					<audio id="mediaelementjsplayer_' . $count . '" class="mep_player" width="' . $width . '" height="' . $height . '" controls="controls"' . $preload . $style . '>
-    				<source type="' . $type . '" src="' . pathurlencode($moviepath) . '" />' . "\n";
-				if (!empty($counterparts)) {
-					$content .= $counterparts;
-				}
-				$content .= '
-    				<object width="' . $width . '" height="' . $height . '" type="application/x-shockwave-flash" data="' . FULLWEBPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER . '/mediaelementjs_player/mediaelement-flash-audio.swf">
-        			<param name="movie" value="' . FULLWEBPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER . '/mediaelementjs_player/mediaelement-flash-audio.swf" />
-        			<param name="flashvars" value="controls=true&amp;file=' . pathurlencode($moviepath) . '" />
-        			<p>' . gettext('Sorry, no playback capabilities.') . '</p>
+          $posterwidth = getOption('mediaelementjs_audioposterwidth');
+          $posterheight = getOption('mediaelementjs_audioposterheight');
+          if(empty($posterwidth)) {
+          	$posterwidth = 640;
+          }
+          if(empty($posterheight)) {
+          	$posterheight = 360;
+          }
+          $playerconfig .= '<img class="mediaelementjs_audioposter" src="' . $movie->getCustomImage(NULL, $posterwidth, $posterheight, $posterwidth, $posterheight, NULL, NULL, true, NULL) . '" alt=""'  . $style . '>' . "\n";
+        }
+				$playerconfig .= '
+					<audio id="mediaelementjsplayer'.$count.'" class="mep_player" width="'.$width.'" height="'.$height.'" controls="controls"'.$preload.$style.'>
+    				<source type="audio/mp3" src="'.pathurlencode($moviepath).'" />';
+    			if(!empty($counterparts)) {
+    				$playerconfig .= $counterparts;
+    			}
+    	  	$playerconfig  .= '
+    				<object width="'.$width.'" height="'.$height.'" type="application/x-shockwave-flash" data="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf">
+        			<param name="movie" value="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf" />
+        			<param name="flashvars" value="controls=true&amp;file='.pathurlencode($moviepath).'" />
+        			<p>'.gettext('Sorry, no playback capabilities.').'</p>
     				</object>
 					</audio>
 				';
 				break;
 			case 'video':
-				switch ($this->suffix) {
-					case 'yt':
-						$filecontent = file_get_contents($moviepath);
-						$type = 'video/youtube';
-						$moviepath = html_encode(trim($filecontent));
-						$width = 1280;
-						$height = 720;
-						$style = ' style="max-width: 100%"';
-						break;
-					default:
-						$width = $this->get('VideoResolution_x');
-						$height = $this->get('VideoResolution_y');
-						$style = ' style="max-width: 100%;"';
-
-						// If for some reason VideoResolution_x and/or VideoResolution_y cannot be determined (.flv for example)
-						// we set a $width and $height with a ratio of 16:9
-						if (!$width || !$height) {
-							$width = 1280;
-							$height = 720;
-						}
-						break;
-				}
 				$poster = '';
-				if (getOption('mediaelementjs_poster')) {
-					// User should take care of correct poster size to prevent too much distortion
-					if (is_null($this->objectsThumb)) {
-						$poster = ' poster="' . $this->getCustomImage(250, null, null, null, null, null, null, true, null) . '"';
-					} else {
-						$poster = ' poster="' . $this->getCustomImage(null, $width, $height, $width, $height, null, null, true, NULL) . '"';
-					}
+				if(getOption('mediaelementjs_poster')) {
+					$posterwidth = getOption('mediaelementjs_videoposterwidth');
+          $posterheight = getOption('mediaelementjs_videoposterheight');
+          if(empty($posterwidth)) {
+          	$posterwidth = 640;
+          }
+          if(empty($posterheight)) {
+          	$posterheight = 360;
+          }
+					$poster = ' poster="' . $movie->getCustomImage(null, $posterwidth, $posterheight, $posterwidth, $posterheight, null, null, true) . '"';
 				}
-				$content .= '
-					<video id="mediaelementjsplayer_' . $count . '" class="mep_player" width="' . $width . '" height="' . $height . '" controls="controls"' . $preload . $poster . $style . '>
-    				<source type="' . $type . '" src="' . pathurlencode($moviepath) . '" />' . "\n";
-				if (!empty($counterparts)) {
-					$content .= $counterparts;
-				}
-				if (getOption('mediaelementjs_tracks')) {
-					$tracks = $this->getSubtitleCode();
-					if (!empty($tracks)) {
-						$content .= $tracks;
-					}
-				}
-				$content .= '
-    				<object width="' . $width . '" height="' . $height . '" type="application/x-shockwave-flash" data="' . FULLWEBPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER . '/mediaelementjs_player/mediaelement-flash-video.swf">
-        			<param name="movie" value="' . FULLWEBPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER . '/mediaelementjs_player/mediaelement-flash-video.swf" />
-        			<param name="flashvars" value="controls=true&amp;file=' . pathurlencode($moviepath) . '" />
-        			<p>' . gettext('Sorry, no playback capabilities.') . '</p>
+				$playerconfig  .= '
+					<video id="mediaelementjsplayer' . $count . '" class="mep_player" width="' . $width . '" height="' . $height . '" controls="controls"' . $preload . $poster . $style . '>
+    				<source type="video/mp4" src="'.pathurlencode($moviepath).'" />'."\n";
+    		if(!empty($counterparts)) {
+    			$playerconfig .= $counterparts;
+    		}
+				$playerconfig  .= '
+    				<!-- <track kind="subtitles" src="subtitles.srt" srclang="en" /> -->
+    				<!-- <track kind="chapters" src="chapters.srt" srclang="en" /> -->
+    				<object width="'.$width.'" height="'.$height.'" type="application/x-shockwave-flash" data="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf">
+        			<param name="movie" value="'.FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/flashmediaelement.swf" />
+        			<param name="flashvars" value="controls=true&amp;file='.pathurlencode($moviepath).'" />
+        			<p>'.gettext('Sorry, no playback capabilities.').'</p>
     				</object>
 					</video>
 				';
 				break;
 		}
-		return $content;
+		return $playerconfig;
 	}
 
 	/**
-	 * Get the HTML configuration of Mediaelementjs playlist
-	 * @param string $mode what kind of playlist. Set to either 'audio' or 'video'
-	 * @param string $albumfolder the name of a specific album to get the mediafiles from
-	 * @param string $count number of the item to append to the id for multiple playlists on one page
+	 * outputs the player configuration HTML
+	 *
+ 	 * @param mixed $movie the image object if empty (within albums) the current image is used
+	 * @param string $movietitle the title of the movie. if empty the Image Title is used
 	 */
-	static function playlistPlayer($mode, $albumfolder = '', $count = '') {
+	function printPlayerConfig($movie = NULL, $movietitle = NULL) {
+		global $_zp_current_image;
+		if (empty($movie)) {
+			$movie = $_zp_current_image;
+		}
+		echo $this->getPlayerConfig($movie,$movietitle);
+	}
+
+	/**
+	 * Gets the counterpart formats (webm,ogg) for html5 browser compatibilty
+	 * NOTE: These formats need to be uploaded via FTP as they are not valid file types for Zenphoto, to avoid confusion
+	 *
+	 * @param string $moviepath full link to the multimedia file to get counterpart formats from.
+	 * @param string $ext the file format extention to search the counterpart for (as we already have fetched that)
+	 */
+	function getCounterpartFiles($moviepath,$ext) {
+		$counterparts = '';
+		switch($this->mode) {
+			case 'audio':
+				$suffixes = array('oga','webma');
+				break;
+			case 'video':
+				$suffixes = array('ogv','webmv');
+				break;
+		}
+    //$filesuffix ='';
+		foreach($suffixes as $suffix) {
+			$counterpart = str_replace(".".$ext, ".".$suffix, $moviepath); // in case the letters of the extension are also part of the filename (e.g. ogv_video.ogv)
+			if(file_exists(str_replace(FULLWEBPATH,SERVERPATH,$counterpart))) {
+				switch($suffix) {
+					case 'oga':
+						$type = 'audio/ogg';
+						break;
+					case 'ogv':
+						$type = 'video/ogg';
+						break;
+					case 'webma':
+						$type = 'audio/webm';
+						break;
+					case 'webmv':
+						$type = 'video/webm';
+						break;
+				}
+				$counterparts .= '<source type="'.$type.'" src="'.pathurlencode($counterpart).'" />'."\n";
+				//array_push($counterparts,$source);
+			}
+		}
+		return $counterparts;
+	}
+
+	/**
+	 * Returns the width of the player
+	 * @param object $image the image for which the width is requested (not used)
+	 *
+	 * @return mixed
+	 */
+	function getWidth($image=NULL) {
+		switch($this->mode) {
+			case 'audio':
+				$width = getOption('mediaelementjs_audiowidth');
+				if(empty($width)) {
+					return '100%';
+				} else {
+					return $width;
+				}
+				break;
+			case 'video':
+				$width = getOption('mediaelementjs_videowidth');
+				if(empty($width)) {
+					return '100%';
+				} else {
+					return $width;
+				}
+				break;
+		}
+	}
+
+	/**
+	 * Returns the height of the player
+	 * @param object $image the image for which the height is requested (not used!)
+	 *
+	 * @return mixed
+	 */
+	function getHeight($image=NULL) {
+		switch($this->mode) {
+			case 'audio':
+				$height = getOption('mediaelementjs_audioheight');
+				if(empty($height)) {
+					return '30';
+				} else {
+					return $height;
+				}
+				break;
+			case 'video':
+				$height = getOption('mediaelementjs_videoheight');
+				if(empty($height)) {
+					return 'auto';
+				} else {
+					return $height;
+				}
+				break;
+		}
+	}
+
+	static function getMacroPlayer($albumname, $imagename, $width, $height) {
+		global $_zp_multimedia_extension;
+		$movie = newImage(NULL, array('folder' => $albumname, 'filename' => $imagename), true);
+		if ($movie->exists) {
+			return $_zp_multimedia_extension->getPlayerConfig($movie, NULL, $width, $height);
+		} else {
+			return '<span class = "error">' . sprintf(gettext('%1$s::%2$s not found.'), $albumname, $imagename) . '</span>';
+		}
+	}
+
+	static function macro($macros) {
+		$macros['MEDIAPLAYER'] = array(
+						'class'	 => 'function',
+						'params' => array('string','string','int*','int*'),
+						'value'	 => 'mediaelementjs_player::getMacroPlayer',
+						'owner'	 => 'mediaelementjs_player',
+						'desc'	 => gettext('provide the album name (%1), media file name (%2), optional width (%3) and optional height (%4)')
+		);
+		return $macros;
+	}
+
+	/**Experimental
+	 * Returns the width of the player
+	 * @param object $image the image for which the height is requested (not used!)
+	 *
+	 * @return mixed
+	 */
+	function playlistPlayer($mode, $albumfolder='', $count='') {
 		global $_zp_current_album;
 
-		if (empty($albumfolder)) {
+		if(empty($albumfolder)) {
 			$albumobj = $_zp_current_album;
 		} else {
 			$albumobj = newAlbum($albumfolder);
 		}
-		if (empty($count)) {
+		if(empty($count)) {
 			$multiplayer = false;
 			$count = '1';
-		} else {
+		}	else {
 			$multiplayer = true; // since we need extra JS if multiple players on one page
 			$count = $count;
 		}
-		$content = '';
-		if (getOption('mediaelementjs_playlist_preload')) {
+		$playerconfig  = '';
+		if(getOption('mediaelementjs_preload')) {
 			$preload = ' preload="preload"';
 		} else {
 			$preload = ' preload="none"';
 		}
 		$counteradd = '';
-		switch ($mode) {
+		switch($mode) {
 			case 'audio':
-				$style = ' style="max-width: 100%;"';
-				$content = '
-					<audio id="mediaelementjsplaylist_' . $count . '" class="mep_playlist" data-showplaylist="true" controls="controls"' . $preload . $style . '>' . "\n";
-				$files = $albumobj->getImages(0);
-				$counter = '';
-				foreach ($files as $file) {
-					$ext = getSuffix($file);
-					$type = getMimeString($ext);
-					if (in_array($ext, array('m4a', 'mp3'))) {
-						$counteradd = '';
-						$counter++;
-						if ($counter < 10)
-							$counteradd = '0';
-						$obj = newImage($albumobj, $file);
-						// Any poster size will do for now. Gets scaled as a background image.
-						$poster = $obj->getCustomImage(800, null, null, null, null, null, null, true);
-						$content .= '<source type="' . $type . '" src="' . pathurlencode($obj->getFullImageURL()) . '" data-poster="' . $poster . '" title="' . $counteradd . $counter . '. ' . html_encode($obj->getTitle()) . '" />' . "\n";
-						$counterparts = $obj->getCounterpartCode();
-						if ($counterparts) {
-							$content .= $counterparts;
-						}
-					}
+				$width = getOption('mediaelementjs_audiowidth');
+				$height = 'auto';
+				if($width == '100%') {
+					$style= ' style="max-width: 100%;clear: both;"';
+				} else {
+					$style = '';
 				}
-				$content .= '
+				$playerconfig  = '
+					<audio id="mediaelementjsplayer'.$count.'" class="mep_playlist" width="'.$width.'" height="'.$height.'" controls="controls"'.$preload.$style.'>';
+						$files = $albumobj->getImages(0);
+						$counter = '';
+						foreach($files as $file) {
+							$ext = getSuffix($file);
+							if(in_array($ext,array('m4a','mp3'))) {
+								$counteradd = '';
+								$counter++;
+								if($counter < 10) $counteradd = '0';
+								$obj = newImage($albumobj,$file);
+								$playerconfig  .= '<source type="audio/mpeg" src="'.pathurlencode($obj->getFullImageURL()).'" title="'.$counteradd.$counter.'. '.html_encode($obj->getTitle()).'" />';
+								/* Does not work with this playlist script
+								$counterparts = $this->getCounterpartFiles($moviepath,$ext);
+								if(count($counterparts) != 0) {
+    							foreach($counterparts as $counterpart) {
+    								$playerconfig .= $counterpart;
+    							}
+    						}
+    						*/
+							}
+						}
+    	  	$playerconfig  .= '
 					</audio>
 				';
 				break;
 			case 'video':
-				$style = ' style="max-width: 100%;"';
-				$backgroundposter = getOption('mediaelementjs_videoplaylistbackground');
-				if ($backgroundposter) {
-					$obj = getItembyID('images', $backgroundposter);
-					if (is_object($obj) && $obj->loaded && (zp_loggedin(VIEW_UNPUBLISHED_RIGHTS) || $obj->getShow())) {
-						$backgroundposter = ' poster="' . html_encode($obj->getSizedImage(800)) . '"'; // not sure which size we need here actually
-					}
+				$width = getOption('mediaelementjs_videowidth');
+				$height = getOption('mediaelementjs_videoheight');
+				if($width == '100%') {
+					$style= ' style="max-width: 100%;display:block;"';
+				} else {
+					$style = '';
 				}
-				$content = '
-					<video id="mediaelementjsplaylist_' . $count . '" class="mep_playlist" data-showplaylist="true" controls="controls"' . $preload . $backgroundposter . $style . '>' . "\n";
-				$files = $albumobj->getImages(0);
-				$counter = '';
-				foreach ($files as $file) {
-					$ext = getSuffix($file);
-					$type = getMimeString($ext);
-					if (in_array($ext, array('m4v', 'mp4', 'flv'))) {
-						$counteradd = '';
-						$counter++;
-						if ($counter < 10) {
-							$counteradd = '0';
+				$playerconfig  = '
+					<video id="mediaelementjsplayer' . $count . '" class="mep_playlist" width="' . $width . '" height="' . $height . '" controls="controls"' . $preload . $style . '>';
+						$files = $albumobj->getImages(0);
+						$counter = '';
+						foreach($files as $file) {
+							$ext = getSuffix($file);
+							if(in_array($ext,array('m4v','mp4','flv'))) {
+								$counteradd = '';
+								$counter++;
+								if($counter < 10) $counteradd = '0';
+								$obj = newImage($albumobj,$file);
+								$playerconfig  .= '<source type="video/mp4" src="'.pathurlencode($obj->getFullImageURL()).'" title="'.$counteradd.$counter.'. '.html_encode($obj->getTitle()).')" />';
+								/* Does not work with this playlist script
+								$counterparts = $this->getCounterpartFiles($moviepath,$ext);
+								if(count($counterparts) != 0) {
+    							foreach($counterparts as $counterpart) {
+    								$playerconfig .= $counterpart;
+    							}
+    						}
+    						*/
+							}
 						}
-						$obj = newImage($albumobj, $file);
-						$poster = $obj->getCustomImage(800, null, null, null, null, null, null, true);
-						$content .= '<source type="' . $type . '" src="' . pathurlencode($obj->getFullImageURL()) . '" data-poster="' . $poster . '" title="' . $counteradd . $counter . '. ' . html_encode($obj->getTitle()) . '" />' . "\n";
-						$counterparts = $obj->getCounterpartCode();
-						if ($counterparts) {
-							$content .= $counterparts;
-						}
-					}
-				}
-				$content .= '
+    	  	$playerconfig  .= '
 					</video>
 				';
 				break;
+			}
+			return $playerconfig;
 		}
-		return $content;
-	}
+
 
 } // mediaelementjs class
 
-/**
- * Theme function wrapper for user convenience of echo mediaelementjs::playlistPlayer()
- *
- * @param string $option 'audio' or 'video'
- * @param string $albumfolder album folder name to generate the playlist of
- */
-function printMediaelementjsPlaylist($option, $albumfolder, $count) {
-	echo mediaelementjs::playlistPlayer($option, $albumfolder, $count);
+$_zp_multimedia_extension = new mediaelementjs_player(); // claim to be the flash player.
+zp_register_filter('theme_head','mediaelementjs_player::mediaelementjs_js');
+if(getOption('mediaelementjs_playlist')) {
+	zp_register_filter('theme_head','mediaelementjs_player::mediaelementjs_playlist_js');
 }
