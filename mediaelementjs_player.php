@@ -520,7 +520,7 @@ class mediaelementjs_player {
 		}
 	}
 
-	static function getMacroPlayer($albumname, $imagename, $width, $height) {
+	static function getMacroPlayer($albumname, $imagename, $width = '', $height = '') {
 		global $_zp_multimedia_extension;
 		$movie = newImage(NULL, array('folder' => $albumname, 'filename' => $imagename), true);
 		if ($movie->exists) {
