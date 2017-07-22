@@ -3,12 +3,12 @@ mediaelementjs_player
 
 A [Zenphoto](http://www.zenphoto.org) plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
 
-##Installation
+## Installation
 
 Place the file `mediaelementjs_player.php` and the folder of the same name into your `/plugins` folder.
 
-Supported file formats
-----------------------
+## Supported file formats
+
 - Audio: <var>.mp3</var>, <var>.m4a</var> - Counterpart formats <var>.oga</var> and <var>.webma</var> supported (see note below!)<br>
 - Video: <var>.m4v</var>/<var>.mp4</var>, <var>.flv</var> - Counterpart formats <var>.ogv</var> and <var>.webmv</var> supported (see note below!)
  
@@ -22,14 +22,15 @@ Since the flash fallback covers all essential formats this is not much of an iss
   
 If you have problems with any format being recognized, you might need to tell your server about the mime types first. See examples on http://mediaelementjs.com under "installation".
  
-###Subtitle and chapter support for videos (NOTE: NOT IMPLEMENTED YET!):
+### Subtitle and chapter support for videos (NOTE: NOT IMPLEMENTED YET!)
+
 It supports .srt files. Like the counterpart formats MUST be uploaded via FTP! They must follow this naming convention:
 subtitles file: `<nameofyourvideo>_subtitles.srt`
 chapters file: `<name of your video>_chapters.srt`
   
 Example: `yourvideo.mp4` with `yourvideo_subtitles.srt` and `yourvideo_chapters.srt`
 
-###Content Macro<br>
+### Content Macro
 Mediaelementjs attaches to the content_macro MEDIAPLAYER you can use within normal text of Zenpage pages or articles for example.
  
 ```
@@ -48,7 +49,8 @@ If you are using more than one player on a page you need to pass a 2nd parameter
  
 *NOTE:This player does not support external albums!* 
  
-###Playlist (beta):
+### Playlist (beta)
+
 Basic playlist support (adapted from Andrew Berezovsky – https://github.com/duozersk/mep-feature-playlist):
 Enable the option to load the playlist script support. Then call on your theme's album.php the method 
 
