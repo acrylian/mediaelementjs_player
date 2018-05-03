@@ -22,14 +22,12 @@ var TwitchApi = {
 			}).then(function () {
 				TwitchApi._createPlayer(settings);
 			});
-		} else if (!TwitchApi.promise) {
+		} else {
 			TwitchApi.promise = TwitchApi.promise || mejs.Utils.loadScript('https://player.twitch.tv/js/embed/v1.js');
 			TwitchApi.promise.then(function () {
 				TwitchApi._createPlayer(settings);
 			});
 		}
-
-		return TwitchApi.promise;
 	},
 
 	_createPlayer: function _createPlayer(settings) {
@@ -64,10 +62,10 @@ var TwitchApi = {
 
 		for (var i = 0, total = parameters.length; i < total; i++) {
 			var paramParts = parameters[i].split('=');
-			if (~paramParts[0].indexOf('channel=')) {
+			if (~paramParts[0].indexOf('channel')) {
 				twitchId = paramParts[1];
 				break;
-			} else if (~paramParts[0].indexOf('video=')) {
+			} else if (~paramParts[0].indexOf('video')) {
 				twitchId = 'v' + paramParts[1];
 				break;
 			}
@@ -84,12 +82,12 @@ var TwitchApi = {
 		var parts = url.split('?');
 		url = parts[0];
 		var id = url.substring(url.lastIndexOf('/') + 1);
-		return (/^\d+$/i.test(id) !== null ? 'v' + id : id
+		return (/^\d+$/i.test(id) ? 'v' + id : id
 		);
 	},
 
 	getTwitchType: function getTwitchType(id) {
-		return (/^v\d+/i.test(id) !== null ? 'video' : 'channel'
+		return (/^v\d+/i.test(id) ? 'video' : 'channel'
 		);
 	}
 };
@@ -278,7 +276,7 @@ var TwitchIframeRenderer = {
 
 			var events = ['mouseover', 'mouseout'],
 			    assignEvents = function assignEvents(e) {
-				var event = createEvent(e.type, twitch);
+				var event = mejs.Utils.createEvent(e.type, twitch);
 				mediaElement.dispatchEvent(event);
 			};
 
@@ -288,12 +286,12 @@ var TwitchIframeRenderer = {
 
 			var timer = void 0;
 
-			twitchPlayer.addEventListener('ready', function () {
+			twitchPlayer.addEventListener(Twitch.Player.READY, function () {
 				paused = false;
 				ended = false;
 				sendEvents(['rendererready', 'loadedmetadata', 'loadeddata', 'canplay']);
 			});
-			twitchPlayer.addEventListener('play', function () {
+			twitchPlayer.addEventListener(Twitch.Player.PLAY, function () {
 				if (!hasStartedPlaying) {
 					hasStartedPlaying = true;
 				}
@@ -306,14 +304,14 @@ var TwitchIframeRenderer = {
 					sendEvents(['timeupdate']);
 				}, 250);
 			});
-			twitchPlayer.addEventListener('pause', function () {
+			twitchPlayer.addEventListener(Twitch.Player.PAUSE, function () {
 				paused = true;
 				ended = false;
 				if (!twitchPlayer.getEnded()) {
 					sendEvents(['pause']);
 				}
 			});
-			twitchPlayer.addEventListener('ended', function () {
+			twitchPlayer.addEventListener(Twitch.Player.ENDED, function () {
 				paused = true;
 				ended = true;
 				sendEvents(['ended']);
@@ -360,7 +358,7 @@ var TwitchIframeRenderer = {
 		};
 		twitch.destroy = function () {};
 
-		mediaElement.promises.push(TwitchApi.load(twitchSettings));
+		TwitchApi.load(twitchSettings);
 
 		return twitch;
 	}
