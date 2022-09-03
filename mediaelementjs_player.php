@@ -248,6 +248,8 @@ class mediaelementjs_player {
 		}
 		*/
 		$skin = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/mediaelementplayer.css';
+		$mejscontrolssvg = FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/mejs-controls.svg';
+
 		$features = mediaelementjs_player::getFeatureOptions();
 		if(getOption('mediaelementjs_showcontrols')) {
 			$showcontrols = 'true';
@@ -260,6 +262,8 @@ class mediaelementjs_player {
 		<script>
 			$(document).ready(function(){
 				$('audio.mep_player,video.mep_player').mediaelementplayer({
+					pluginPath: '<?php echo FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/'; ?>',
+					iconSprite: '<?php echo FULLWEBPATH.'/'.USER_PLUGIN_FOLDER.'/mediaelementjs_player/mejs-controls.svg'; ?>',
 					alwaysShowControls: <?php echo $showcontrols; ?>,
 					features: [<?php echo $features; ?>]
 				});
