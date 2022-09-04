@@ -1,5 +1,6 @@
 mediaelementjs_player
 =====================
+**Note: The plugin is not developed actively anymore. Since all modern browsers can display video/audio content via HTML5 natively the only reason is the flashfallback for old browser. Besides that pull requests for fixes are still welcome.**
 
 A [Zenphoto](http://www.zenphoto.org) plugin for the MediaElement.js video and audio player by John Dyer (http://mediaelementjs.com). It will play natively via HTML5 in capable browsers and is responsive.
 
